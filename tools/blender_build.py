@@ -268,8 +268,10 @@ def setup_world(sun_az=210, sun_el=35):
     sc.view_settings.exposure = -0.3
 
 
-def add_camera(name, eye, r, u, f, focal_px, width_px):
+def add_camera(name, eye, r, u, f, focal_px, width_px, cx=0.0, cy=0.0):
     cam = bpy.data.cameras.new(name)
+    cam.shift_x = -cx / width_px
+    cam.shift_y = cy / width_px
     cam.sensor_fit = "HORIZONTAL"
     cam.sensor_width = 36.0
     cam.lens = focal_px * 36.0 / width_px
@@ -338,6 +340,7 @@ def main():
     scale = float(args[args.index("--scale") + 1]) if "--scale" in args else 0.5
     only = args[args.index("--only") + 1].split(",") if "--only" in args else None
     thumbs = "--thumbs" in args
+    photo = "--photo" in args
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     objs_src = bt.build_all()
@@ -345,6 +348,11 @@ def main():
     bt.write_materials()
     mats = make_materials()
     objs = [to_blender(objs_src[k], mats) for k in sorted(objs_src)]
+    if photo:
+        import photo_texture
+        by_name = {o.name: o for o in objs}
+        res = photo_texture.run(by_name)
+        photo_texture.assign_photo_materials(by_name, res)
     ntri = export_game_meshes(objs)
     print(f"exported {ntri} triangles to bobs_truck.dae")
     os.makedirs(PREVIEW, exist_ok=True)
@@ -368,8 +376,8 @@ def main():
     for name, params in cams.items():
         if only and name not in only:
             continue
-        eye, r, u, f, fl, k1 = camera_from_params(params)
-        cam = add_camera("cam_" + name, eye, r, u, f, fl, 1600)
+        eye, r, u, f, fl, k1, cx, cy = camera_from_params(params)
+        cam = add_camera("cam_" + name, eye, r, u, f, fl, 1600, cx, cy)
         out = os.path.join(PREVIEW, f"blender_{name}.png")
         render(cam, out, W, H, samples)
         ph = Image.open(os.path.join(ROOT, "reference", f"{name}.jpg")).convert("RGB").resize((W, H))

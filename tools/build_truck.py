@@ -32,9 +32,9 @@ HALF_W = 0.99        # body half width
 BELT = 1.38          # beltline
 ROOF = 1.85
 BED_TOP = 1.40
-BED_Y0, BED_Y1 = 2.02, 4.42
-CAB_Y0, CAB_Y1 = 0.72, 1.98
-ZC = 1.22            # shoulder crease height (runs fender -> door -> bed)
+BED_Y0, BED_Y1 = 1.955, 4.42
+CAB_Y0, CAB_Y1 = 0.72, 1.93
+ZC = 1.20            # shoulder crease height (runs fender -> door -> bed)
 INSET = 0.025        # how far the shoulder leans in by the top edge
 
 # ------------------------------------------------------------------ materials
@@ -215,14 +215,16 @@ def x_side(z, ztop, xo=None):
     return xo - INSET * min(1.0, (z - ZC) / max(1e-6, ztop - ZC))
 
 
-def shoulder(o, s, y0, y1, zt0, zt1, xin, xo=None, mat="bt_paint"):
-    """Solid upper band of a body side between y0..y1: from the crease (ZC) up to the top edge
-    (zt0 at y0, zt1 at y1), leaning inward by INSET."""
+def shoulder(o, s, y0, y1, zt0, zt1, xin, xo=None, mat="bt_paint", zc0=None, zc1=None):
+    """Solid upper band of a body side between y0..y1: from the crease (zc0/zc1, default ZC) up to
+    the top edge (zt0 at y0, zt1 at y1), leaning inward by INSET."""
     xo = HALF_W if xo is None else xo
+    zc0 = ZC if zc0 is None else zc0
+    zc1 = ZC if zc1 is None else zc1
     p = [[[None, None], [None, None]], [[None, None], [None, None]]]
-    for j, (y, zt) in enumerate(((y0, zt0), (y1, zt1))):
-        p[0][j][0], p[0][j][1] = (s * xin, y, ZC), (s * xin, y, zt)
-        p[1][j][0], p[1][j][1] = (s * xo, y, ZC), (s * (xo - INSET), y, zt)
+    for j, (y, zt, zc) in enumerate(((y0, zt0, zc0), (y1, zt1, zc1))):
+        p[0][j][0], p[0][j][1] = (s * xin, y, zc), (s * xin, y, zt)
+        p[1][j][0], p[1][j][1] = (s * xo, y, zc), (s * (xo - INSET), y, zt)
     o.hexa(mat, p)
 
 
@@ -273,37 +275,43 @@ def rust_patch(o, s, y0, y1, z0, z1, x=None):
 # ------------------------------------------------------------------ front clip
 def build_front():
     o = obj("bt_body_front")
+    top = lambda y: 1.12 + (y + 0.80) * (1.33 - 1.12) / 1.52       # fender top line (front -> cowl)
+    crease = lambda y: top(y) - 0.14
     fender = [(-0.74, 0.66), (-0.53, 0.66), (-0.53, 0.76), (-0.50, 0.86), (-0.43, 0.94), (-0.31, 0.99),
-              (0.31, 0.99), (0.43, 0.94), (0.50, 0.86), (0.53, 0.76), (0.53, 0.62), (0.72, 0.62),
-              (0.72, ZC), (-0.74, ZC)]
+              (0.31, 0.99), (0.43, 0.94), (0.50, 0.86), (0.53, 0.76), (0.53, 0.57), (0.72, 0.57),
+              (0.72, crease(0.72)), (-0.74, crease(-0.74))]
     in_arch = lambda a, b: "bt_under" if abs(a[0]) <= 0.531 and abs(b[0]) <= 0.531 else None
     for s in (1, -1):
         x0, x1 = sorted((s * 0.66, s * HALF_W))
         o.extrude_x("bt_paint", fender, x0, x1, side_mat=in_arch)
-        quad_x(o, "bt_under", s * 0.665, -0.53, 0.53, 0.62, 0.99, s)            # wheel-well liner
-        shoulder(o, s, -0.74, 0.72, 1.300, 1.362, 0.66)
+        quad_x(o, "bt_under", s * 0.665, -0.53, 0.53, 0.57, 0.99, s)            # wheel-well liner
+        shoulder(o, s, -0.74, 0.72, top(-0.74), top(0.72), 0.66, zc0=crease(-0.74), zc1=crease(0.72))
         # front corner of the fender, outboard of the headlights
-        o.extrude_x("bt_paint", [(-0.80, 0.66), (-0.74, 0.66), (-0.74, ZC), (-0.80, ZC)],
+        o.extrude_x("bt_paint", [(-0.80, 0.66), (-0.74, 0.66), (-0.74, crease(-0.74)), (-0.80, crease(-0.80))],
                     *sorted((s * 0.865, s * HALF_W)))
-        shoulder(o, s, -0.80, -0.74, 1.297, 1.300, 0.865)
+        shoulder(o, s, -0.80, -0.74, top(-0.80), top(-0.74), 0.865, zc0=crease(-0.80), zc1=crease(-0.74))
         # arch lip: slightly proud flange following the wheel opening
         lip = [(-0.53, 0.66), (-0.53, 0.76), (-0.50, 0.86), (-0.43, 0.94), (-0.31, 0.99),
-               (0.31, 0.99), (0.43, 0.94), (0.50, 0.86), (0.53, 0.76), (0.53, 0.62)]
+               (0.31, 0.99), (0.43, 0.94), (0.50, 0.86), (0.53, 0.76), (0.53, 0.57)]
         arch_lip(o, s, lip, 0.022)
         # amber side marker with chrome surround
         xm = s * (HALF_W + 0.002)
         quad_x(o, "bt_chrome", xm, -0.765, -0.585, 0.795, 0.860, s)
         quad_x(o, "bt_amber", s * (HALF_W + 0.004), -0.755, -0.595, 0.805, 0.850, s)
     # hood (covers the fender tops)
-    hood = [(-0.815, 1.292), (0.72, 1.357), (0.72, 1.385), (-0.815, 1.322)]
+    hood = [(-0.815, top(-0.815) - 0.008), (0.72, top(0.72) - 0.005), (0.72, top(0.72) + 0.025),
+            (-0.815, top(-0.815) + 0.022)]
     o.extrude_x("bt_paint", hood, -0.978, 0.978)
     # hood seam shadow lines along the fender tops
     for s in (1, -1):
         # a thin black strip slightly outboard of the hood edge
-        o.oriented_quad("bt_black", (s * 0.979, -0.80, 1.300), (s * 0.979, 0.72, 1.363),
-                        (s * 0.979, 0.72, 1.380), (s * 0.979, -0.80, 1.318), outward=(s, 0, 0))
+        o.oriented_quad("bt_black", (s * 0.979, -0.80, top(-0.80)), (s * 0.979, 0.72, top(0.72)),
+                        (s * 0.979, 0.72, top(0.72) + 0.017), (s * 0.979, -0.80, top(-0.80) + 0.017), outward=(s, 0, 0))
 
-    # ---- grille / headlight assembly (front face at y=-0.80)
+    # ---- grille / headlight assembly (front face at y=-0.80); modelled at the old height and
+    # squashed to the real 0.66 .. 1.195 m opening measured from the photos
+    front_obj = o
+    o = MeshObject("grille_tmp")
     yf = -0.815
     # outer frame bars (argent)
     o.box("bt_argent", (-0.865, yf, 1.195), (0.865, -0.76, 1.295))   # header
@@ -329,6 +337,9 @@ def build_front():
     bow = [(-0.07, 0.955), (-0.025, 0.955), (-0.02, 0.945), (0.02, 0.945), (0.025, 0.955), (0.07, 0.955),
            (0.06, 0.985), (0.025, 0.985), (0.02, 0.995), (-0.02, 0.995), (-0.025, 0.985), (-0.06, 0.985)]
     o.extrude_y("bt_argent", [(x, z) for x, z in bow], -0.82, -0.805)
+    gz = lambda p: (p[0], p[1], 0.655 + (p[2] - 0.70) * (1.10 - 0.655) / (1.295 - 0.70))
+    front_obj.merge(o.transformed(gz))
+    o = front_obj
     # radiator core behind grille
     o.box("bt_under", (-0.62, -0.70, 0.72), (0.62, -0.64, 1.20))
 
@@ -337,7 +348,7 @@ def build_front():
 def build_cab():
     o = obj("bt_body_cab")
     t = 0.05
-    x1, y0, y1, z0, z1 = HALF_W - INSET, CAB_Y0, CAB_Y1, 0.62, BELT
+    x1, y0, y1, z0, z1 = HALF_W - INSET, CAB_Y0, CAB_Y1, 0.56, BELT
     # --- lower tub (outer skin); the outer 1.8cm of each side is the lower panel + shoulder
     o.box("bt_paint", (-x1, y0, z0), (x1, y1, z1), skip=("+z",))
     for s in (1, -1):
@@ -360,15 +371,15 @@ def build_cab():
     ):
         o.oriented_quad("bt_paint", a, b, c, d, outward=(0, 0, 1))
     # cowl vent (black) between hood and windshield
-    o.box("bt_black", (-0.93, 0.725, BELT - 0.002), (0.93, 0.83, BELT + 0.008))
+    o.box("bt_black", (-0.93, 0.725, BELT - 0.002), (0.93, 0.795, BELT + 0.008))
     # parked wipers
-    for (p0, p1) in (((0.02, 0.855, 1.395), (0.66, 0.875, 1.425)), ((-0.66, 0.855, 1.395), (-0.04, 0.875, 1.425))):
+    for (p0, p1) in (((0.02, 0.815, 1.395), (0.66, 0.835, 1.425)), ((-0.66, 0.815, 1.395), (-0.04, 0.835, 1.425))):
         o.cylinder("bt_black", p0, p1, 0.007, segs=6)
         o.cylinder("bt_black", add(p0, (0, 0.012, 0.02)), add(p1, (0, 0.012, 0.02)), 0.004, segs=6)
 
     # --- greenhouse
-    fb, rb = 0.84, 1.98         # bottom front / rear y
-    ft, rt = 1.17, 1.945        # top front / rear y
+    fb, rb = 0.76, 1.93         # bottom front / rear y
+    ft, rt = 1.04, 1.895        # top front / rear y
     xb, xt = 0.97, 0.80
     zb, zt = BELT, ROOF
     FL_b, FR_b = (xb, fb, zb), (-xb, fb, zb)
@@ -399,18 +410,18 @@ def build_cab():
     # --- door details
     for s in (1, -1):
         xs = s * (HALF_W + 0.0015)
-        for y in (0.845, 1.835):  # door seams
-            seam(o, s, y, 0.64, BELT, BELT)
-        quad_x(o, "bt_black", xs, 0.845, 1.835, 0.645, 0.651, s)
+        for y in (0.745, 1.81):  # door seams
+            seam(o, s, y, 0.58, BELT, BELT)
+        quad_x(o, "bt_black", xs, 0.745, 1.81, 0.585, 0.591, s)
         # handle + lock (on the shoulder, so they sit a little further in)
         xh = x_side(1.30, BELT)
         box_s(o, "bt_chrome", s, xh - 0.004, xh + 0.016, 1.60, 1.73, 1.285, 1.315)
         box_s(o, "bt_black", s, xh - 0.004, xh + 0.010, 1.62, 1.71, 1.278, 1.286)
         box_s(o, "bt_chrome", s, xh - 0.004, xh + 0.006, 1.765, 1.785, 1.28, 1.30)
         # rocker shading + rust at the cab corner (as on the real truck)
-        quad_x(o, "bt_under", xs, 0.72, 1.98, 0.62, 0.64, s)
-        rust_patch(o, s, 1.86, 1.975, 0.625, 0.70)
-        rust_patch(o, s, 1.80, 1.86, 0.625, 0.655)
+        quad_x(o, "bt_under", xs, 0.72, CAB_Y1, 0.56, 0.58, s)
+        rust_patch(o, s, 1.815, CAB_Y1 - 0.005, 0.565, 0.66)
+        rust_patch(o, s, 1.75, 1.815, 0.565, 0.60)
         # mirror: two arms + head, chrome door bracket
         box_s(o, "bt_chrome", s, HALF_W - 0.01, 1.03, 0.875, 0.945, 1.29, 1.37)
         for z in (1.33, 1.43):
@@ -419,11 +430,11 @@ def build_cab():
         box_s(o, "bt_glass", s, 1.108, 1.272, 0.936, 0.938, 1.368, 1.612)
     # --- interior
     i = o
-    i.box("bt_seat", (-0.86, 1.45, 0.92), (0.86, 1.88, 1.06))                    # cushion
-    i.hexa("bt_seat", [[[(-0.86, 1.80, 1.06), (-0.86, 1.80 + 0.12, 1.66)],
-                        [(-0.86, 1.94, 1.06), (-0.86, 1.94, 1.66)]],
-                       [[(0.86, 1.80, 1.06), (0.86, 1.80 + 0.12, 1.66)],
-                        [(0.86, 1.94, 1.06), (0.86, 1.94, 1.66)]]])                # backrest
+    i.box("bt_seat", (-0.86, 1.40, 0.92), (0.86, 1.83, 1.06))                    # cushion
+    i.hexa("bt_seat", [[[(-0.86, 1.75, 1.06), (-0.86, 1.75 + 0.12, 1.66)],
+                        [(-0.86, 1.89, 1.06), (-0.86, 1.89, 1.66)]],
+                       [[(0.86, 1.75, 1.06), (0.86, 1.75 + 0.12, 1.66)],
+                        [(0.86, 1.89, 1.06), (0.86, 1.89, 1.66)]]])                # backrest
     i.box("bt_interior", (-0.93, 0.78, 1.06), (0.93, 1.02, 1.36))                 # dash
     i.hexa("bt_interior", [[[(-0.93, 0.78, 1.36), (-0.93, 0.78, 1.40)], [(-0.93, 1.06, 1.33), (-0.93, 1.08, 1.37)]],
                            [[(0.93, 0.78, 1.36), (0.93, 0.78, 1.40)], [(0.93, 1.06, 1.33), (0.93, 1.08, 1.37)]]])
@@ -439,7 +450,7 @@ def build_cab():
         tip = add(add(col1, mul(axis, 0.02)), add(mul(u, 0.18 * math.cos(ang)), mul(v, 0.18 * math.sin(ang))))
         i.cylinder("bt_black", add(col1, mul(axis, 0.02)), tip, 0.012, segs=6)
     # floor mat & shifter (column shift - skip), transmission hump
-    i.box("bt_rubber", (-0.92, 0.80, 0.745), (0.92, 1.92, 0.75))
+    i.box("bt_rubber", (-0.92, 0.80, 0.745), (0.92, 1.87, 0.75))
     i.box("bt_rubber", (-0.16, 0.80, 0.75), (0.16, 1.40, 0.86))
 
 
@@ -516,8 +527,8 @@ def build_bumpers():
     f = obj("bt_bumper_F")
     path = [(1.00, -0.72), (0.985, -0.84), (0.93, -0.895), (-0.93, -0.895), (-0.985, -0.84), (-1.00, -0.72)]
     # tangent goes -x along the front, so the right normal (ty,-tx) points -y = forward. good.
-    prof = [(-0.02, 0.64), (0.0, 0.64), (0.035, 0.645), (0.055, 0.62), (0.062, 0.545),
-            (0.052, 0.455), (0.02, 0.44), (-0.02, 0.445)]
+    prof = [(-0.02, 0.645), (0.0, 0.645), (0.035, 0.65), (0.055, 0.625), (0.064, 0.535),
+            (0.056, 0.43), (0.025, 0.405), (-0.02, 0.41)]
     path = [(x, y) for x, y in reversed(path)]  # left->right? ensure normal points forward
     sweep(f, "bt_chrome", _orient_path(path, (0, -1)), prof)
     # bumper brackets
@@ -536,8 +547,9 @@ def build_bumpers():
     for (x0, x1) in ((-0.93, 0.93),):
         quad_top(r, "bt_diamond", x0, x1, 4.43, 4.57, 0.6935, tile=6)
     # licence plate (driver side of centre), recessed black mount
-    r.box("bt_black", (0.04, 4.605, 0.515), (0.385, 4.612, 0.685))
-    quad_y(r, "bt_plate", 4.6135, 0.058, 0.367, 0.525, 0.678, 1, uv=((1, 0), (0, 0), (0, 1), (1, 1)))
+    # licence plate: just right (passenger side) of centre, as in the photos
+    r.box("bt_black", (-0.345, 4.605, 0.515), (0.0, 4.612, 0.685))
+    quad_y(r, "bt_plate", 4.6135, -0.327, -0.018, 0.525, 0.678, 1, uv=((1, 0), (0, 0), (0, 1), (1, 1)))
     # hitch receiver + cross tube
     r.box("bt_frame", (-0.40, 4.42, 0.44), (0.40, 4.49, 0.50))
     r.box("bt_frame", (-0.037, 4.40, 0.43), (0.037, 4.64, 0.505))
@@ -671,7 +683,7 @@ def build_wheels():
 # ------------------------------------------------------------------ accessories
 def build_toolbox():
     o = obj("bt_toolbox")
-    y0, y1 = 2.05, 2.50
+    y0, y1 = BED_Y0 + 0.03, BED_Y0 + 0.48
     zr = BED_TOP + 0.016
     h = 0.13
     o.box("bt_diamond", (-0.995, y0, zr), (0.995, y1, zr + h))
@@ -679,29 +691,28 @@ def build_toolbox():
     o.box("bt_diamond", (-0.99, y0 - 0.005, zr + h), (0.99, y1 + 0.012, zr + h + 0.012))   # lid
     quad_y(o, "bt_black", y1 + 0.0125, -0.99, 0.99, zr + h - 0.004, zr + h, 1)            # lid seam
     for s in (1, -1):
-        box_s(o, "bt_black", s, 0.30, 0.42, y1, y1 + 0.008, zr + 0.06, zr + 0.105)        # paddle latches
-        box_s(o, "bt_chrome", s, 0.325, 0.395, y1 + 0.008, y1 + 0.014, zr + 0.07, zr + 0.095)
-    o.box("bt_uws", (-0.10, y1, zr + 0.055), (-0.02, y1 + 0.004, zr + 0.09))          # UWS badge
+        box_s(o, "bt_black", s, 0.50, 0.62, y1, y1 + 0.008, zr + 0.06, zr + 0.105)        # paddle latches
+        box_s(o, "bt_chrome", s, 0.525, 0.595, y1 + 0.008, y1 + 0.014, zr + 0.07, zr + 0.095)
+    o.box("bt_uws", (-0.14, y1, zr + 0.05), (-0.04, y1 + 0.004, zr + 0.095))          # UWS badge
     # fix diamond UVs to tile nicely (auto UV is metres; texture repeats every 0.25m)
     tris = o.groups["bt_diamond"]
     o.groups["bt_diamond"] = [tuple(list(tr[:6]) + [(u * 4, v * 4) for (u, v) in tr[6:9]]) for tr in tris]
 
 
 def build_plowmount():
-    """Western Unimount style push frame with light bar and plow lights."""
+    """Western Unimount style push frame with light bar and plow lights (lamps sit at hood height)."""
     o = obj("bt_plowmount")
     for s in (1, -1):
         box_s(o, "bt_frame", s, 0.38, 0.46, -1.12, -0.86, 0.40, 0.48)       # push beams to frame horns
-        box_s(o, "bt_frame", s, 0.335, 0.385, -1.155, -1.105, 0.40, 1.37)   # light towers
-        # lamp stalk + housing (black back, chrome rim, clear lens, amber turn lens)
+        box_s(o, "bt_frame", s, 0.335, 0.385, -1.155, -1.105, 0.40, 1.11)   # light towers
         for xs_ in (0.49, 0.57):   # two rusty threaded studs
-            o.cylinder("bt_rust", (s * xs_, -1.12, 1.37), (s * xs_, -1.12, 1.43), 0.008, segs=6)
-        box_s(o, "bt_black", s, 0.40, 0.66, -1.10, -0.96, 1.43, 1.66)        # housing
-        box_s(o, "bt_amber", s, 0.41, 0.65, -1.107, -1.10, 1.605, 1.65)      # turn lens on top
-        box_s(o, "bt_black", s, 0.41, 0.65, -1.107, -1.10, 1.595, 1.605)
-        box_s(o, "bt_chrome", s, 0.41, 0.65, -1.106, -1.10, 1.44, 1.595)     # reflector
-        box_s(o, "bt_headlight", s, 0.415, 0.645, -1.112, -1.106, 1.445, 1.59)
-    o.box("bt_frame", (-0.62, -1.16, 1.34), (0.62, -1.10, 1.37))            # light bar
+            o.cylinder("bt_rust", (s * xs_, -1.12, 1.11), (s * xs_, -1.12, 1.17), 0.008, segs=6)
+        box_s(o, "bt_black", s, 0.40, 0.66, -1.10, -0.96, 1.17, 1.40)        # housing
+        box_s(o, "bt_amber", s, 0.41, 0.65, -1.107, -1.10, 1.345, 1.39)      # turn lens on top
+        box_s(o, "bt_black", s, 0.41, 0.65, -1.107, -1.10, 1.335, 1.345)
+        box_s(o, "bt_chrome", s, 0.41, 0.65, -1.106, -1.10, 1.18, 1.335)     # reflector
+        box_s(o, "bt_headlight", s, 0.415, 0.645, -1.112, -1.106, 1.185, 1.33)
+    o.box("bt_frame", (-0.62, -1.16, 1.08), (0.62, -1.10, 1.11))            # light bar
     o.box("bt_frame", (-0.52, -0.99, 0.36), (0.52, -0.87, 0.46))            # receiver (behind bumper)
     o.box("bt_yellow", (-0.30, -1.05, 0.62), (-0.06, -0.87, 0.84))          # hydraulic pump
     o.cylinder("bt_black", (-0.18, -1.05, 0.72), (-0.18, -1.12, 0.72), 0.04, segs=10)
@@ -862,6 +873,18 @@ def write_materials():
         json.dump(out, f, indent=2)
 
 
+REAR_STRETCH = 0.10   # photos show the bed/bumper ending ~10 cm further back than first modelled
+STRETCH_Y0, STRETCH_Y1 = 3.95, 4.25
+
+
+def stretch_rear(p):
+    y = p[1]
+    if y <= STRETCH_Y0:
+        return p
+    t = min(1.0, (y - STRETCH_Y0) / (STRETCH_Y1 - STRETCH_Y0))
+    return (p[0], y + REAR_STRETCH * t, p[2])
+
+
 def build_all():
     OBJS.clear()
     build_front()
@@ -873,6 +896,8 @@ def build_all():
     build_toolbox()
     build_plowmount()
     build_plow()
+    for name in ("bt_bed", "bt_tailgate", "bt_bumper_R", "bt_frame_mesh"):
+        OBJS[name] = OBJS[name].transformed(stretch_rear)
     return OBJS
 
 

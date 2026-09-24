@@ -36,11 +36,12 @@ def render_cam(objs, cam, size, skip=SKIP_DEFAULT, ss=2):
     """Render with an explicit camera (eye, right, up, forward, focal_px); returns (image, model mask)."""
     eye, r, u, f, fl = cam[:5]
     k1 = cam[5] if len(cam) > 5 else 0.0
+    cxy = (cam[6], cam[7]) if len(cam) > 7 else (0.0, 0.0)
     return render_core(objs, np.asarray(eye), np.asarray(r), np.asarray(u), np.asarray(f), fl,
-                       size[0], size[1], ss, skip, None, True, ground=False, k1=k1)
+                       size[0], size[1], ss, skip, None, True, ground=False, k1=k1, cxy=cxy)
 
 
-def render_core(objs, eye, r, u, f, fl, W, H, ss, skip, cols, bg, ground, k1=0.0):
+def render_core(objs, eye, r, u, f, fl, W, H, ss, skip, cols, bg, ground, k1=0.0, cxy=(0.0, 0.0)):
     cols = cols or bt.preview_colors()[0]
     Wi, Hi = W * ss, H * ss
     fl = fl * ss
@@ -101,8 +102,8 @@ def render_core(objs, eye, r, u, f, fl, W, H, ss, skip, cols, bg, ground, k1=0.0
             continue  # skip clipping complexity (only ground could cross)
         xn, yn = cx[i] / z, cy[i] / z
         dd = 1 + k1 * (xn * xn + yn * yn)
-        sx = Wi / 2 + fl * xn * dd
-        sy = Hi / 2 - fl * yn * dd
+        sx = Wi / 2 + cxy[0] * ss + fl * xn * dd
+        sy = Hi / 2 + cxy[1] * ss - fl * yn * dd
         x0, x1 = int(max(0, math.floor(sx.min()))), int(min(Wi - 1, math.ceil(sx.max())))
         y0, y1 = int(max(0, math.floor(sy.min()))), int(min(Hi - 1, math.ceil(sy.max())))
         if x0 > x1 or y0 > y1:

@@ -37,6 +37,7 @@ PHOTOS = {
     },
     "front_left": {
         "size": (1600, 1200),
+        "distortion": "radial",
         "guess": {"eye": (3.2, -2.6, 1.3), "target": (-0.3, 1.0, 0.9), "fov": 75},
         "points": [
             (FL_HUB, (848, 903)),
@@ -44,11 +45,11 @@ PHOTOS = {
             ((bt.TRACK_F + 0.10, 0.0, 0.01), (812, 1073)),
             ((bt.TRACK_R + 0.10, bt.WB, 0.01), (1212, 776)),
             # (tyre tops are hidden inside the arches in this close shot)
-            ((0.72, -0.79, 1.10), (550, 668)),   # left headlight centre
-            ((0.72, -0.78, 0.86), (553, 745)),   # left parking lamp centre
-            ((0.80, 1.17, 1.85), (962, 345)),    # windshield top, left
-            ((-0.80, 1.17, 1.85), (655, 366)),   # windshield top, right
-            ((0.97, 0.84, 1.38), (950, 492)),    # windshield base, left
+            ((0.72, -0.79, 0.954), (550, 668)),  # left headlight centre
+            ((0.72, -0.78, 0.775), (553, 745)),  # left parking lamp centre
+            ((0.80, 1.04, 1.85), (962, 345)),    # windshield top, left
+            ((-0.80, 1.04, 1.85), (655, 366)),   # windshield top, right
+            ((0.97, 0.76, 1.38), (950, 492)),    # windshield base, left
             ((1.0, -0.72, 0.64), (630, 845)),    # front bumper left end, top
         ],
     },
@@ -72,8 +73,24 @@ PHOTOS = {
             (FR_HUB, (1043, 690)),
             ((-bt.TRACK_F - 0.10, 0.0, 0.01), (1040, 750)),
             ((-bt.TRACK_F - 0.10, 0.0, 2 * bt.TIRE_R - 0.01), (1045, 615)),
-            ((-0.915, 4.43, 1.17), (582, 700)),   # right tail lamp centre
-            ((0.0, 4.448, 1.128), (372, 690)),   # centre of the CHEVROLET lettering
+            ((-0.915, 4.53, 1.17), (582, 700)),   # right tail lamp centre
+            ((0.0, 4.548, 1.128), (372, 690)),   # centre of the CHEVROLET lettering
+        ],
+    },
+    "rear": {
+        "size": (1600, 1200),
+        "distortion": False,
+        "guess": {"eye": (0.6, 6.5, 1.2), "target": (0.0, 3.0, 1.0), "fov": 75},
+        "points": [
+            ((0.904, 4.537, 1.165), (232, 700)),   # left tail lamp centre
+            ((0.904, 4.537, 0.935), (245, 768)),   # left tail lamp bottom
+            ((0.84, 4.54, 1.39), (272, 492)),      # tailgate top, left corner
+            ((-0.018, 4.714, 0.678), (705, 765)),  # plate corners
+            ((-0.327, 4.714, 0.678), (843, 758)),
+            ((-0.018, 4.714, 0.525), (712, 862)),
+            ((-0.327, 4.714, 0.525), (850, 855)),
+            ((0.64, 1.93, 1.43), (262, 440)),      # rear window, bottom corners
+            ((-0.64, 1.93, 1.43), (640, 440)),
         ],
     },
 }
@@ -93,14 +110,20 @@ def rot_from_angles(yaw, pitch, roll):
     return r, u, f
 
 
-def project(params, P, size):
-    ex, ey, ez, yaw, pitch, roll, fl, k1 = params
+def params_full(params):
+    """Older 8-value parameter sets have no principal-point offset."""
+    p = list(params)
+    return p + [0.0] * (10 - len(p))
+
+
+def project(params, P, size, distort=True):
+    ex, ey, ez, yaw, pitch, roll, fl, k1, cx, cy = params_full(params)
     r, u, f = rot_from_angles(yaw, pitch, roll)
     rel = np.asarray(P, float) - np.array([ex, ey, ez])
     x, y = rel @ r / (rel @ f), rel @ u / (rel @ f)
-    d = 1 + k1 * (x * x + y * y)   # radial (barrel/pincushion) lens distortion
+    d = 1 + k1 * (x * x + y * y) if distort else 1.0   # radial lens distortion
     W, H = size
-    return np.stack([W / 2 + fl * x * d, H / 2 - fl * y * d], axis=1)
+    return np.stack([W / 2 + cx + fl * x * d, H / 2 + cy - fl * y * d], axis=1)
 
 
 def initial(guess, size):
@@ -109,25 +132,26 @@ def initial(guess, size):
     yaw = math.atan2(d[1], d[0])
     pitch = math.atan2(d[2], math.hypot(d[0], d[1]))
     fl = 0.5 * size[1] / math.tan(math.radians(guess["fov"]) / 2)
-    return np.array([*e, yaw, pitch, 0.0, fl, 0.0])
+    return np.array([*e, yaw, pitch, 0.0, fl, 0.0, 0.0, 0.0])
 
 
 def fit(photo):
     P = np.array([p for p, _ in photo["points"]], float)
     Q = np.array([q for _, q in photo["points"]], float)
     x0 = initial(photo["guess"], photo["size"])
-    k_ok = len(P) >= 8   # only fit distortion when there are enough points
-    lo = [-np.inf] * 7 + [-0.4 if k_ok else -1e-9]
-    hi = [np.inf] * 7 + [0.4 if k_ok else 1e-9]
+    k_ok = len(P) >= 8 and photo.get("distortion", True) is not False   # fit lens distortion with enough points
+    c_ok = len(P) >= 9 and photo.get("distortion", True) is True        # ... and an off-centre (cropped) image
+    lo = [-np.inf] * 7 + [-0.6 if k_ok else -1e-9] + [-250 if c_ok else -1e-9] * 2
+    hi = [np.inf] * 7 + [0.6 if k_ok else 1e-9] + [250 if c_ok else 1e-9] * 2
     res = least_squares(lambda p: (project(p, P, photo["size"]) - Q).ravel(), x0, bounds=(lo, hi))
     err = np.abs(res.fun).reshape(-1, 2)
     return res.x, float(np.sqrt((err ** 2).sum(1)).mean())
 
 
 def camera_from_params(params):
-    ex, ey, ez, yaw, pitch, roll, fl, k1 = params
+    ex, ey, ez, yaw, pitch, roll, fl, k1, cx, cy = params_full(params)
     r, u, f = rot_from_angles(yaw, pitch, roll)
-    return np.array([ex, ey, ez]), r, u, f, fl, k1
+    return np.array([ex, ey, ez]), r, u, f, fl, k1, cx, cy
 
 
 if __name__ == "__main__":
@@ -137,7 +161,7 @@ if __name__ == "__main__":
     for name, ph in PHOTOS.items():
         params, err = fit(ph)
         out[name] = [float(v) for v in params]
-        print(f"{name}: eye=({params[0]:.2f},{params[1]:.2f},{params[2]:.2f}) focal={params[6]:.0f}px k1={params[7]:+.3f}  mean err {err:.1f}px")
+        print(f"{name}: eye=({params[0]:.2f},{params[1]:.2f},{params[2]:.2f}) focal={params[6]:.0f}px k1={params[7]:+.3f} c=({params[8]:+.0f},{params[9]:+.0f})  mean err {err:.1f}px")
         img = Image.open(os.path.join(bt.ROOT, "reference", f"{name}.jpg")).convert("RGB").resize(ph["size"])
         ren, mask = render_cam(objs, camera_from_params(params), ph["size"], skip={"bt_plowblade"})
         over = Image.composite(Image.blend(img, ren, 0.55), img, mask)

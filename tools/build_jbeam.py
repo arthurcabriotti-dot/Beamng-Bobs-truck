@@ -35,7 +35,7 @@ def dist(a, b):
 
 # =============================================================== nodes
 # ---- frame ladder
-FRAME_Y = [-0.86, -0.45, 0.0, 0.6, 1.2, 1.9, 2.6, WB, 4.0, 4.46]
+FRAME_Y = [-0.86, -0.45, 0.0, 0.6, 1.2, 1.9, 2.6, WB, 4.05, 4.56]
 frame = []
 for i, y in enumerate(FRAME_Y):
     for s, sn in ((1, "l"), (-1, "r")):
@@ -59,12 +59,12 @@ def lattice(prefix, group, ys, xs, zs, w):
 
 
 front = lattice("bf", "bt_front", [-0.80, -0.25, 0.35], [(0.95, "l"), (-0.95, "r")],
-                [(0.72, "b"), (1.30, "t")], 9.0)
-cab = lattice("bc", "bt_cab", [0.74, 1.35, 1.96], [(0.98, "l"), (-0.98, "r")],
+                [(0.72, "b"), (1.20, "t")], 9.0)
+cab = lattice("bc", "bt_cab", [0.74, 1.33, 1.91], [(0.98, "l"), (-0.98, "r")],
               [(0.66, "b"), (1.38, "t")], 18.0)
-cab += [node("bcr0l", 0.80, 1.17, 1.85, "bt_cab", 10.0), node("bcr0r", -0.80, 1.17, 1.85, "bt_cab", 10.0),
-        node("bcr1l", 0.80, 1.94, 1.85, "bt_cab", 10.0), node("bcr1r", -0.80, 1.94, 1.85, "bt_cab", 10.0)]
-bed = lattice("bb", "bt_bed", [2.03, 2.80, 3.60, 4.42], [(0.97, "l"), (-0.97, "r")],
+cab += [node("bcr0l", 0.80, 1.08, 1.85, "bt_cab", 10.0), node("bcr0r", -0.80, 1.08, 1.85, "bt_cab", 10.0),
+        node("bcr1l", 0.80, 1.89, 1.85, "bt_cab", 10.0), node("bcr1r", -0.80, 1.89, 1.85, "bt_cab", 10.0)]
+bed = lattice("bb", "bt_bed", [1.97, 2.80, 3.60, 4.52], [(0.97, "l"), (-0.97, "r")],
               [(0.68, "b"), (1.40, "t")], 14.0)
 
 # ---- engine / transmission
@@ -350,7 +350,7 @@ main = {
     "camerasInternal": [
         ["type", "x", "y", "z", "fov", "id1:", "id2:", "id3:", "id4:", "id5:", "id6:"],
         {"nodeWeight": 1.3, "selfCollision": False, "collision": False},
-        ["dash", 0.40, 1.55, 1.62, 65, "bc1lt", "bc1rt", "bc2lt", "bcr0l", "bcr1l", "bc1lb"],
+        ["dash", 0.40, 1.50, 1.62, 65, "bc1lt", "bc1rt", "bc2lt", "bcr0l", "bcr1l", "bc1lb"],
     ],
     "flexbodies": [["mesh", "[group]:", "nonFlexMaterials"]] + [[m, g] for m, g in FLEX],
     "nodes": node_rows(node_order, {"frictionCoef": 0.7, "nodeMaterial": "|NM_METAL", "collision": True,
@@ -440,7 +440,7 @@ ACC = {
         "flexbodies": [["mesh", "[group]:", "nonFlexMaterials"], ["bt_plowmount", ["bt_plowmount"]]],
         "nodes": [["id", "posX", "posY", "posZ"], {"group": "bt_plowmount", "nodeWeight": 16.0},
                   ["pm1l", 0.42, -1.14, 0.42], ["pm1r", -0.42, -1.14, 0.42],
-                  ["pm2l", 0.36, -1.13, 1.36], ["pm2r", -0.36, -1.13, 1.36],
+                  ["pm2l", 0.36, -1.13, 1.10], ["pm2r", -0.36, -1.13, 1.10],
                   ["pm3", 0.0, -1.20, 0.40], {"group": ""}],
         "beams": [["id1:", "id2:"],
                   {"beamSpring": 6001000, "beamDamp": 250, "beamDeform": 150000, "beamStrength": FLT_MAX},
