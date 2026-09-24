@@ -27,13 +27,13 @@ from camfit import PHOTOS, camera_from_params, project  # noqa: E402
 
 # object -> texture size
 TEXTURED = {
-    "bt_body_front": 2048, "bt_body_cab": 2048, "bt_bed": 2048, "bt_tailgate": 1024,
-    "bt_bumper_F": 1024, "bt_bumper_R": 1024, "bt_toolbox": 1024, "bt_plowmount": 1024,
+    "bt_body_front": 4096, "bt_body_cab": 4096, "bt_bed": 4096, "bt_tailgate": 2048,
+    "bt_bumper_F": 1024, "bt_bumper_R": 2048, "bt_toolbox": 1024, "bt_plowmount": 1024,
     "bt_wheel_FL": 512, "bt_wheel_FR": 512, "bt_wheel_RL": 512, "bt_wheel_RR": 512,
     "bt_tire_FL": 1024, "bt_tire_FR": 1024, "bt_tire_RL": 1024, "bt_tire_RR": 1024,
 }
 KEEP_MATS = {"bt_glass"}          # faces keeping their own material
-PHOTO_WEIGHT = {"side_left": 1.0, "rear_left": 1.0, "rear_right": 1.0, "front_left": 0.8, "rear": 0.6}
+PHOTO_WEIGHT = {"side_left": 1.0, "rear_left": 1.0, "rear_right": 1.0, "front_left": 0.5, "rear": 0.15}
 
 # Regions of each photo that are NOT the truck even though they sit in front of it (image px, 1600x1200)
 MASKS = {
@@ -67,18 +67,113 @@ def img_to_np(im):
 
 
 # ------------------------------------------------------------------ UVs + bakes
-def unwrap(ob):
+def visible_faces(ob, cams):
+    """Faces that at least one photo sees square-on enough to be worth texture space."""
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+    dg = bpy.context.evaluated_depsgraph_get()
+    tree = BVHTree.FromObject(ob, dg)
     me = ob.data
-    uv = me.uv_layers.get("PhotoUV") or me.uv_layers.new(name="PhotoUV")
-    me.uv_layers.active = uv
+    vis = np.zeros(len(me.polygons), bool)
+    centers = np.array([tuple(p.center) for p in me.polygons])
+    normals = np.array([tuple(p.normal) for p in me.polygons])
+    for params in cams.values():
+        eye = camera_from_params(params)[0]
+        q = project(params, centers, (1600, 1200))
+        rel = centers - eye
+        dist = np.linalg.norm(rel, axis=1)
+        facing = np.sum(normals * -rel, axis=1) / np.maximum(dist, 1e-6) > 0.15
+        inframe = (q[:, 0] > 0) & (q[:, 0] < 1600) & (q[:, 1] > 0) & (q[:, 1] < 1200)
+        for i in np.nonzero(facing & inframe & ~vis)[0]:
+            d = rel[i] / dist[i]
+            hit = tree.ray_cast(Vector(eye), Vector(d), dist[i] + 0.01)
+            if hit[0] is None or hit[2] == i or hit[3] > dist[i] - 0.01:
+                vis[i] = True
+    return vis
+
+
+def unwrap(ob, cams=None, hidden_scale=0.18, size=2048, margin_px=6):
+    """Own planar-chart unwrap + shelf packing (Blender's smart_project misbehaves headless).
+    Faces are grouped into connected charts sharing a dominant normal axis, projected flat,
+    faces no photo sees are shrunk, and everything is packed at the largest scale that fits."""
+    import bmesh
+    me = ob.data
+    uvl = me.uv_layers.get("PhotoUV") or me.uv_layers.new(name="PhotoUV")
+    me.uv_layers.active = uvl
     me.uv_layers["UVMap"].active_render = True
-    bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.smart_project(angle_limit=math.radians(60), island_margin=0.004, area_weight=0.0)
-    bpy.ops.object.mode_set(mode="OBJECT")
+    vis = visible_faces(ob, cams) if cams else np.ones(len(me.polygons), bool)
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.faces.ensure_lookup_table()
+    nf = len(bm.faces)
+    key = []
+    for f in bm.faces:
+        n = f.normal
+        a = max(range(3), key=lambda k: abs(n[k]))
+        key.append((a, n[a] > 0, bool(vis[f.index])))
+    parent = list(range(nf))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    for e in bm.edges:
+        lf = e.link_faces
+        if len(lf) == 2 and key[lf[0].index] == key[lf[1].index]:
+            ra, rb = find(lf[0].index), find(lf[1].index)
+            if ra != rb:
+                parent[ra] = rb
+    charts = {}
+    for f in bm.faces:
+        charts.setdefault(find(f.index), []).append(f)
+    items = []   # (faces, 2d loop coords dict, w, h)
+    for faces in charts.values():
+        a, _, v = key[faces[0].index]
+        u_ax, v_ax = [k for k in range(3) if k != a]
+        sc = 1.0 if v else hidden_scale
+        pts = {l.index: (l.vert.co[u_ax] * sc, l.vert.co[v_ax] * sc) for f in faces for l in f.loops}
+        arr = np.array(list(pts.values()))
+        mn = arr.min(0)
+        pts = {k: (x - mn[0], y - mn[1]) for k, (x, y) in pts.items()}
+        w, h = np.ptp(arr, 0)
+        if h > w:   # lie long charts flat for better shelf packing
+            pts = {k: (y, w - x) for k, (x, y) in pts.items()}
+            w, h = h, w
+        items.append((faces, pts, max(w, 1e-4), max(h, 1e-4)))
+    items.sort(key=lambda it: -it[3])
+    m = margin_px / size
+
+    def pack(s):
+        x = y = rowh = 0.0
+        place = []
+        for faces, pts, w, h in items:
+            ww, hh = w * s + m, h * s + m
+            if ww > 1:
+                return None
+            if x + ww > 1:
+                x, y, rowh = 0.0, y + rowh, 0.0
+            place.append((x + m / 2, y + m / 2))
+            x += ww
+            rowh = max(rowh, hh)
+        return place if y + rowh <= 1 else None
+    lo, hi = 1e-3, 10.0
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if pack(mid):
+            lo = mid
+        else:
+            hi = mid
+    place = pack(lo)
+    lay = bm.loops.layers.uv["PhotoUV"]
+    for (faces, pts, w, h), (ox, oy) in zip(items, place):
+        for f in faces:
+            for l in f.loops:
+                px, py = pts[l.index]
+                l[lay].uv = (ox + px * lo, oy + py * lo)
+    bm.to_mesh(me)
+    bm.free()
+    return float(vis.mean())
 
 
 def apply_modifiers(ob):
@@ -256,11 +351,12 @@ def run(objects_by_name):
         im = Image.open(os.path.join(bt.ROOT, "reference", f"{name}.jpg")).convert("RGB").resize((1600, 1200))
         photos[name] = srgb_to_lin(np.asarray(im, np.float32) / 255.0)
         masks[name] = photo_mask(name)
-    # textured objects: freeze the bevelled mesh, unwrap
+    # textured objects: freeze the bevelled mesh, unwrap (texture space goes to what the photos see)
     for name in TEXTURED:
         ob = objects_by_name[name]
         apply_modifiers(ob)
-        unwrap(ob)
+        frac = unwrap(ob, cams, size=TEXTURED[name])
+        print(f"  {name:16s} {frac * 100:4.0f}% of faces seen by a photo")
     depths = depth_maps(cams)
     edges = {n: edge_mask(d) for n, d in depths.items()}
     results = {}
@@ -289,19 +385,22 @@ def run(objects_by_name):
             m = sample(masks[cname][..., None], q_d[:, 0], q_d[:, 1])[:, 0]
             e = np.where(edges[cname][iv, iu], 0.03, 1.0)
             res = (fl / np.maximum(zc, 0.1)) / 300.0
-            w = visible * m * e * cosv ** 3 * np.minimum(res, 3.0) ** 1.5 * PHOTO_WEIGHT[cname]
+            usable = visible * m * e * np.clip((cosv - 0.10) / 0.15, 0, 1)      # may this photo be used here?
+            w = usable * cosv ** 3 * np.minimum(res, 3.0) ** 1.5 * PHOTO_WEIGHT[cname]  # how much we prefer it
             col = sample(photos[cname], q_d[:, 0], q_d[:, 1])
             full_w = np.zeros(P.shape[:2], np.float32)
             full_w[cov] = w
+            full_use = np.zeros(P.shape[:2], np.float32)
+            full_use[cov] = usable
             full_c = np.zeros(P.shape, np.float32)
             full_c[cov] = col
             # sharpen: strongly prefer the best view per texel (avoids ghosting from small misalignments)
             w4 = full_w ** 4
             acc += full_c * w4[..., None]
             wsum += w4
-            best = np.maximum(best, full_w)
+            best = np.maximum(best, full_use)
         photo = np.where(wsum[..., None] > 0, acc / np.maximum(wsum, 1e-12)[..., None], 0)
-        alpha = np.clip((best - 0.05) / 0.15, 0, 1)
+        alpha = best
         # bring the flat procedural colour to the photos' exposure where both exist
         good = (alpha > 0.9) & cov
         if good.sum() > 200:
