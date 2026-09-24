@@ -14,6 +14,11 @@
         ],
         "metallicFactor": 0.15,
         "roughnessFactor": 0.5,
+        "detailMap": "vehicles/bobs_truck/bt_paint_wear.png",
+        "detailScale": [
+          0.5,
+          0.5
+        ],
         "instanceBaseColor": true,
         "clearCoatFactor": 1.0,
         "clearCoatRoughnessFactor": 0.12
@@ -26,6 +31,34 @@
     "materialTag1": "vehicle",
     "version": 1.5,
     "dynamicCubemap": true
+  },
+  "bt_bedfloor": {
+    "name": "bt_bedfloor",
+    "mapTo": "bt_bedfloor",
+    "class": "Material",
+    "persistentId": "715ab8f3-981f-53ac-95d4-e069171bd156",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.1,
+        "roughnessFactor": 0.7,
+        "baseColorMap": "vehicles/bobs_truck/bt_bedfloor.png",
+        "instanceBaseColor": true,
+        "clearCoatFactor": 1.0,
+        "clearCoatRoughnessFactor": 0.12
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
   },
   "bt_chrome": {
     "name": "bt_chrome",
@@ -410,13 +443,38 @@
     "Stages": [
       {
         "baseColorFactor": [
-          0.02,
-          0.02,
-          0.022,
+          0.025,
+          0.025,
+          0.027,
           1
         ],
         "metallicFactor": 0.3,
-        "roughnessFactor": 0.3
+        "roughnessFactor": 0.22
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "doubleSided": true
+  },
+  "bt_drum": {
+    "name": "bt_drum",
+    "mapTo": "bt_drum",
+    "class": "Material",
+    "persistentId": "b1b2e6bc-f01b-5b7d-bd3e-d94843ff8d22",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.07,
+          0.045,
+          0.03,
+          1
+        ],
+        "metallicFactor": 0.4,
+        "roughnessFactor": 0.8
       },
       {},
       {},
@@ -489,7 +547,8 @@
         ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.85,
-        "baseColorMap": "vehicles/bobs_truck/bt_tire_side.png"
+        "baseColorMap": "vehicles/bobs_truck/bt_tire_side.png",
+        "normalMap": "vehicles/bobs_truck/bt_tire_side_n.png"
       },
       {},
       {},
@@ -514,7 +573,8 @@
         ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.9,
-        "baseColorMap": "vehicles/bobs_truck/bt_tread.png"
+        "baseColorMap": "vehicles/bobs_truck/bt_tread.png",
+        "normalMap": "vehicles/bobs_truck/bt_tread_n.png"
       },
       {},
       {},
@@ -539,7 +599,8 @@
         ],
         "metallicFactor": 0.85,
         "roughnessFactor": 0.35,
-        "baseColorMap": "vehicles/bobs_truck/bt_diamond.png"
+        "baseColorMap": "vehicles/bobs_truck/bt_diamond.png",
+        "normalMap": "vehicles/bobs_truck/bt_diamond_n.png"
       },
       {},
       {},

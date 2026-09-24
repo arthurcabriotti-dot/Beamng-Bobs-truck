@@ -98,8 +98,28 @@ def make_materials():
     mix.inputs["A"].default_value = (0.44, 0.008, 0.010, 1)
     mix.inputs["B"].default_value = (0.36, 0.014, 0.016, 1)
     nt.links.new(noise.outputs["Fac"], mix.inputs["Factor"])
-    nt.links.new(mix.outputs["Result"], b.inputs["Base Color"])
+    # hand-made wear texture multiplied over the paint (UVs are in metres, texture covers 2 m)
+    wear = tex_node(nt, img("bt_paint_wear.png"), None, scale=0.5)
+    mul = nt.nodes.new("ShaderNodeMix")
+    mul.data_type = "RGBA"
+    mul.blend_type = "MULTIPLY"
+    mul.inputs["Factor"].default_value = 1.0
+    nt.links.new(mix.outputs["Result"], mul.inputs["A"])
+    nt.links.new(wear.outputs["Color"], mul.inputs["B"])
+    nt.links.new(mul.outputs["Result"], b.inputs["Base Color"])
     M["bt_paint"] = m
+    # bed floor: same paint, scuffed and dirty
+    m, nt, b = principled("bt_bedfloor", (0.42, 0.008, 0.010, 1), 0.0, 0.7)
+    t = tex_node(nt, img("bt_bedfloor.png"), None)
+    mul = nt.nodes.new("ShaderNodeMix")
+    mul.data_type = "RGBA"
+    mul.blend_type = "MULTIPLY"
+    mul.inputs["Factor"].default_value = 1.0
+    mul.inputs["A"].default_value = (0.42, 0.008, 0.010, 1)
+    nt.links.new(t.outputs["Color"], mul.inputs["B"])
+    nt.links.new(mul.outputs["Result"], b.inputs["Base Color"])
+    bump_from(nt, b, t, 0.1)
+    M["bt_bedfloor"] = m
 
     M["bt_chrome"] = principled("bt_chrome", (0.95, 0.95, 0.96, 1), 1.0, 0.04)[0]
     M["bt_argent"] = principled("bt_argent", (0.55, 0.56, 0.57, 1), 0.8, 0.35)[0]
@@ -116,14 +136,14 @@ def make_materials():
     M["bt_lamp_clear"] = principled("bt_lamp_clear", (0.75, 0.74, 0.68, 1), 0.3, 0.15)[0]
     M["bt_taillight"] = principled("bt_taillight", (0.35, 0.01, 0.012, 1), 0.1, 0.12)[0]
     M["bt_amber"] = principled("bt_amber", (0.85, 0.35, 0.02, 1), 0.1, 0.15)[0]
-    M["bt_steelwheel"] = principled("bt_steelwheel", (0.015, 0.015, 0.016, 1), 0.3, 0.28)[0]
+    M["bt_steelwheel"] = principled("bt_steelwheel", (0.02, 0.02, 0.022, 1), 0.2, 0.18)[0]
     m, nt, b = principled("bt_rust", (0.28, 0.11, 0.045, 1), 0.2, 0.9)
     n2 = nt.nodes.new("ShaderNodeTexNoise")
     n2.inputs["Scale"].default_value = 40
     mx = nt.nodes.new("ShaderNodeMix")
     mx.data_type = "RGBA"
-    mx.inputs["A"].default_value = (0.30, 0.12, 0.05, 1)
-    mx.inputs["B"].default_value = (0.12, 0.05, 0.03, 1)
+    mx.inputs["A"].default_value = (0.17, 0.065, 0.028, 1)
+    mx.inputs["B"].default_value = (0.06, 0.028, 0.018, 1)
     nt.links.new(n2.outputs["Fac"], mx.inputs["Factor"])
     nt.links.new(mx.outputs["Result"], b.inputs["Base Color"])
     M["bt_rust"] = m

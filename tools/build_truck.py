@@ -40,7 +40,8 @@ INSET = 0.025        # how far the shoulder leans in by the top edge
 # ------------------------------------------------------------------ materials
 # name: (rgba, metallic, roughness, extra)
 MATS = {
-    "bt_paint":        ((0.50, 0.035, 0.04, 1), 0.15, 0.50, {"instance": True}),
+    "bt_paint":        ((0.50, 0.035, 0.04, 1), 0.15, 0.50, {"instance": True, "detail": "bt_paint_wear.png"}),
+    "bt_bedfloor":     ((0.50, 0.035, 0.04, 1), 0.10, 0.70, {"instance": True, "tex": "bt_bedfloor.png"}),
     "bt_chrome":       ((0.92, 0.92, 0.94, 1), 1.0, 0.07, {}),
     "bt_argent":       ((0.62, 0.63, 0.64, 1), 0.7, 0.35, {}),
     "bt_black":        ((0.018, 0.018, 0.018, 1), 0.0, 0.55, {}),
@@ -56,12 +57,13 @@ MATS = {
     "bt_lamp_clear":   ((0.80, 0.80, 0.76, 1), 0.3, 0.2, {}),
     "bt_taillight":    ((0.55, 0.02, 0.02, 1), 0.2, 0.15, {}),
     "bt_amber":        ((0.95, 0.45, 0.02, 1), 0.2, 0.2, {}),
-    "bt_steelwheel":   ((0.02, 0.02, 0.022, 1), 0.3, 0.3, {}),
+    "bt_steelwheel":   ((0.025, 0.025, 0.027, 1), 0.3, 0.22, {"doubleSided": True}),
+    "bt_drum":         ((0.07, 0.045, 0.03, 1), 0.4, 0.8, {}),
     "bt_rust":         ((0.36, 0.16, 0.07, 1), 0.3, 0.9, {}),
     "bt_tire":         ((0.03, 0.03, 0.03, 1), 0.0, 0.9, {}),
-    "bt_tire_side":    ((1, 1, 1, 1), 0.0, 0.85, {"tex": "bt_tire_side.png"}),
-    "bt_tread":        ((1, 1, 1, 1), 0.0, 0.9, {"tex": "bt_tread.png"}),
-    "bt_diamond":      ((1, 1, 1, 1), 0.85, 0.35, {"tex": "bt_diamond.png"}),
+    "bt_tire_side":    ((1, 1, 1, 1), 0.0, 0.85, {"tex": "bt_tire_side.png", "nrm": "bt_tire_side_n.png"}),
+    "bt_tread":        ((1, 1, 1, 1), 0.0, 0.9, {"tex": "bt_tread.png", "nrm": "bt_tread_n.png"}),
+    "bt_diamond":      ((1, 1, 1, 1), 0.85, 0.35, {"tex": "bt_diamond.png", "nrm": "bt_diamond_n.png"}),
     "bt_frame":        ((0.03, 0.03, 0.03, 1), 0.2, 0.6, {}),
     "bt_under":        ((0.06, 0.055, 0.05, 1), 0.2, 0.8, {}),
     "bt_engine":       ((0.55, 0.22, 0.05, 1), 0.2, 0.5, {}),
@@ -521,9 +523,9 @@ def build_bed():
         rust_patch(o, s, BED_Y0, BED_Y0 + 0.07, 0.635, 0.70)
         rust_patch(o, s, 4.30, BED_Y1 - RC, 0.635, 0.67)
     o.box("bt_paint", (-0.91, BED_Y0, 0.93), (0.91, BED_Y0 + 0.05, BED_TOP))     # front wall
-    o.box("bt_paint", (-0.91, BED_Y0 + 0.05, 0.90), (0.91, 4.40, 0.95))           # floor
+    o.box("bt_bedfloor", (-0.91, BED_Y0 + 0.05, 0.90), (0.91, 4.40, 0.95))        # floor
     for x in (-0.66, -0.33, 0.0, 0.33, 0.66):                                     # floor ribs
-        o.box("bt_paint", (x - 0.025, BED_Y0 + 0.05, 0.95), (x + 0.025, 4.36, 0.962))
+        o.box("bt_bedfloor", (x - 0.025, BED_Y0 + 0.05, 0.95), (x + 0.025, 4.36, 0.962))
     # wheel tubs inside the bed
     for s in (1, -1):
         box_s(o, "bt_paint", s, 0.66, 0.91, 2.86, 3.82, 0.95, 1.12)
@@ -645,44 +647,69 @@ def build_chassis():
 
 
 # ------------------------------------------------------------------ wheels
+def tread_block(t, mat, x0, x1, a0, a1, r0, r1):
+    """Raised tread block on the tyre: x0..x1 across, angle a0..a1 around, radius r0 (base) .. r1 (top)."""
+    def pt(x, a, r):
+        return (x, r * math.cos(a), r * math.sin(a))
+    p = [[[pt(xx, aa, rr) for rr in (r0, r1)] for aa in (a0, a1)] for xx in (x0, x1)]
+    t.hexa(mat, p)
+
+
 def make_wheel(rear):
-    """Left-side wheel at origin, axis +X (outward)."""
+    """Left-side 16x6.5 8-lug steel wheel + 245/75R16 highway-terrain tyre at origin, axis +X (outward)."""
     w = MeshObject("w")
     t = MeshObject("t")
     ax = (1, 0, 0)
     o = (0, 0, 0)
-    side = [(0.205, -0.105), (0.25, -0.122), (0.31, -0.128), (0.36, -0.124), (0.388, -0.112), (0.402, -0.09)]
-    t.lathe("bt_tire", o, ax, side, segs=48)
-    t.lathe("bt_tread", o, ax, [(0.402, -0.09), (0.405, -0.065), (0.405, 0.065), (0.402, 0.09)],
-            segs=48, uv_repeat=24)
+    # ---- tyre: rounded sidewalls, grooved tread base, raised tread blocks
+    RT = 0.397   # tread base radius (blocks add ~8 mm up to TIRE_R)
+    side = [(0.205, -0.092), (0.225, -0.108), (0.26, -0.120), (0.31, -0.126), (0.35, -0.123),
+            (0.375, -0.114), (0.389, -0.101), (RT, -0.080)]
+    t.lathe("bt_tire", o, ax, side, segs=64)
+    t.lathe("bt_tread", o, ax, [(RT, -0.080), (RT, 0.080)], segs=64, uv_repeat=22)
     t.lathe("bt_tire_side", o, ax, [(p[0], -p[1]) for p in reversed(side)], segs=72)
-    # rim
-    w.lathe("bt_steelwheel", o, ax, [(0.216, 0.075), (0.219, 0.088), (0.210, 0.095), (0.199, 0.088),
-                                     (0.197, 0.030), (0.180, 0.025), (0.150, 0.045), (0.078, 0.050),
-                                     (0.072, 0.030)], segs=40)
-    w.lathe("bt_steelwheel", o, ax, [(0.199, 0.02), (0.199, -0.085), (0.214, -0.094)], segs=40)
-    w.lathe("bt_under", o, ax, [(0.175, -0.005), (0.0, -0.005)], segs=24)   # brake / backing plate
-    # hub
-    if rear:
-        w.lathe("bt_rust", o, ax, [(0.105, 0.035), (0.105, 0.075), (0.06, 0.085), (0.052, 0.12),
-                                   (0.035, 0.132), (0.0, 0.132)], segs=24)
-    else:
-        # locking hub: rusty body, chrome dial
-        w.lathe("bt_rust", o, ax, [(0.072, 0.035), (0.070, 0.085), (0.062, 0.09)], segs=24)
-        w.lathe("bt_chrome", o, ax, [(0.062, 0.09), (0.060, 0.108), (0.050, 0.114), (0.0, 0.116)], segs=24)
-        w.box("bt_black", (0.114, -0.007, -0.030), (0.120, 0.007, 0.030))  # dial knob
-    # 8 lug nuts
-    for k in range(8):
-        a = 2 * math.pi * k / 8
-        c = (0.048, 0.0875 * math.cos(a), 0.0875 * math.sin(a))
-        if rear:
-            c = (0.078, 0.0875 * math.cos(a), 0.0875 * math.sin(a))
-        w.cylinder("bt_rust", c, add(c, (0.02, 0, 0)), 0.0115, segs=6)
-    # 8 round vent holes in the disc (dark insets)
+    n = 46
+    da = 2 * math.pi / n
+    for k in range(n):
+        a = k * da
+        # shoulder blocks (wrap slightly onto the shoulder), alternating long/short
+        for sgn in (1, -1):
+            x0, x1 = sorted((sgn * 0.050, sgn * (0.090 if k % 2 else 0.084)))
+            tread_block(t, "bt_tire", x0, x1, a + 0.08 * da, a + 0.86 * da, RT - 0.002, TIRE_R)
+        # two centre ribs, offset half a pitch, with a sipe gap
+        for (x0, x1, off) in ((-0.042, -0.008, 0.0), (0.008, 0.042, 0.5)):
+            tread_block(t, "bt_tire", x0, x1, a + (off + 0.06) * da, a + (off + 0.80) * da, RT - 0.002, TIRE_R - 0.001)
+    # ---- steel wheel: barrel + flanges
+    w.lathe("bt_steelwheel", o, ax, [(0.215, -0.082), (0.212, -0.092), (0.201, -0.088), (0.199, -0.070),
+                                     (0.199, 0.068), (0.201, 0.086), (0.212, 0.091), (0.216, 0.081)], segs=48)
+    # dished disc: outer ring -> dish -> raised hat -> flat centre -> centre bore
+    w.lathe("bt_steelwheel", o, ax, [(0.199, 0.062), (0.186, 0.064), (0.170, 0.058), (0.140, 0.054),
+                                     (0.126, 0.060), (0.112, 0.078), (0.100, 0.086), (0.066, 0.086),
+                                     (0.061, 0.080), (0.061, 0.060)], segs=48)
+    w.lathe("bt_under", o, ax, [(0.185, -0.010), (0.0, -0.010)], segs=24)   # brake backing plate
+    # 8 round vent holes: dark hole + pressed ring around it
     for k in range(8):
         a = 2 * math.pi * (k + 0.5) / 8
-        c = (0.0405, 0.16 * math.cos(a), 0.16 * math.sin(a))
-        w.lathe("bt_black", c, (1, 0.0, 0.0), [(0.018, 0.0), (0.0, 0.0)], segs=12)
+        c = (0.0572, 0.157 * math.cos(a), 0.157 * math.sin(a))
+        w.lathe("bt_drum", add(c, (0.0012, 0, 0)), (1, 0, 0), [(0.021, 0.0), (0.0, 0.0)], segs=16)
+        w.torus("bt_steelwheel", add(c, (-0.001, 0, 0)), (1, 0, 0), 0.024, 0.0035, segs=16, rsegs=5)
+    # hub and lug nuts
+    if rear:
+        # 14-bolt full-floater hub: flange with 8 studs + domed cap, all rusty
+        w.lathe("bt_rust", o, ax, [(0.112, 0.086), (0.112, 0.100), (0.090, 0.104), (0.066, 0.112),
+                                   (0.060, 0.148), (0.045, 0.158), (0.0, 0.160)], segs=32)
+        lug_r, lug_x = 0.0875, 0.100
+    else:
+        # locking hub: rusty body, chrome dial with a black knob
+        w.lathe("bt_rust", o, ax, [(0.064, 0.086), (0.066, 0.104), (0.064, 0.126), (0.058, 0.130)], segs=32)
+        w.lathe("bt_chrome", o, ax, [(0.058, 0.130), (0.057, 0.140), (0.048, 0.146), (0.0, 0.147)], segs=32)
+        w.box("bt_black", (0.144, -0.007, -0.030), (0.152, 0.007, 0.030))
+        lug_r, lug_x = 0.0875, 0.086
+    for k in range(8):
+        a = 2 * math.pi * k / 8
+        c = (lug_x, lug_r * math.cos(a), lug_r * math.sin(a))
+        w.cylinder("bt_rust", c, add(c, (0.016, 0, 0)), 0.0115, segs=6)          # hex nut
+        w.cylinder("bt_rust", add(c, (0.016, 0, 0)), add(c, (0.024, 0, 0)), 0.0065, segs=8)  # stud end
     return w, t
 
 
@@ -814,8 +841,54 @@ def build_textures():
         d.text((cx - tw / 2, yy), txt, font=font, fill=(34, 34, 34))
         d.text((cx - 300, yy + 110), "LT245/75R16  120/116S  M+S", font=fs, fill=(28, 28, 28))
     d.rectangle([0, 2, W, 8], fill=(28, 28, 28))
-    img = img.transpose(Image.FLIP_LEFT_RIGHT)
     img.save(os.path.join(VEH, "bt_tire_side.png"))
+
+    # ---- procedural wear / detail textures (all tile seamlessly)
+    import numpy as np
+    rng = np.random.default_rng(1985)
+
+    def tile_noise(n, scale):
+        """Periodic smooth noise in 0..1 (gaussian-filtered white noise in the frequency domain)."""
+        f = np.fft.fftfreq(n)
+        fx, fy = np.meshgrid(f, f)
+        g = np.exp(-(fx ** 2 + fy ** 2) * (n / scale) ** 2)
+        v = np.real(np.fft.ifft2(np.fft.fft2(rng.standard_normal((n, n))) * g))
+        v -= v.min()
+        return v / v.max()
+
+    def height_to_normal(h, strength):
+        """Tangent-space normal map (OpenGL/Y+) from a periodic height field."""
+        dx = (np.roll(h, -1, 1) - np.roll(h, 1, 1)) * strength
+        dy = (np.roll(h, -1, 0) - np.roll(h, 1, 0)) * strength
+        nrm = np.dstack([-dx, dy, np.ones_like(h)])
+        nrm /= np.linalg.norm(nrm, axis=2, keepdims=True)
+        return Image.fromarray(((nrm * 0.5 + 0.5) * 255).astype(np.uint8))
+
+    # paint wear (detail map, multiplies the paint colour): sun-faded blotches, fine speckle, tiny chips
+    N = 1024
+    v = 0.90 + 0.10 * tile_noise(N, 40) - 0.05 * tile_noise(N, 8) + 0.025 * rng.standard_normal((N, N))
+    chips = tile_noise(N, 300) > 0.83
+    v = np.where(chips, 0.55 + 0.1 * tile_noise(N, 150), v)
+    rgb = np.dstack([v, v * 0.985, v * 0.98])
+    Image.fromarray((np.clip(rgb, 0, 1) * 255).astype(np.uint8)).save(os.path.join(VEH, "bt_paint_wear.png"))
+
+    # bed floor: paint (multiplied by instance colour) with long scuffs, scratches and dirt
+    N = 1024
+    base = 0.72 + 0.12 * tile_noise(N, 30)
+    streak = np.repeat(tile_noise(N, 300).mean(0, keepdims=True), N, 0)     # lengthwise scuffs
+    v = base - 0.25 * np.clip(streak - 0.55, 0, 1)
+    for _ in range(90):                                                        # scratches
+        x = rng.integers(0, N); y0 = rng.integers(0, N); ln = rng.integers(40, 300)
+        v[np.arange(y0, y0 + ln) % N, (x + (np.arange(ln) * rng.uniform(-0.05, 0.05)).astype(int)) % N] *= 0.55
+    dirt = tile_noise(N, 60)
+    rgb = np.dstack([v, v, v])
+    rgb = rgb * (1 - 0.35 * dirt[..., None]) + 0.35 * dirt[..., None] * np.array([0.30, 0.26, 0.22])
+    Image.fromarray((np.clip(rgb, 0, 1) * 255).astype(np.uint8)).save(os.path.join(VEH, "bt_bedfloor.png"))
+
+    # normal maps from the existing colour textures' brightness
+    for name, strength in (("bt_diamond", 6.0), ("bt_tread", 5.0), ("bt_tire_side", 8.0)):
+        h = np.asarray(Image.open(os.path.join(VEH, name + ".png")).convert("L"), np.float32) / 255.0
+        height_to_normal(h, strength).save(os.path.join(VEH, name + "_n.png"))
 
     # headlight lens: fine prism flutes + faint reflector glow
     W, H = 256, 192
@@ -900,6 +973,11 @@ def write_materials():
         st = {"baseColorFactor": [round(v, 4) for v in c], "metallicFactor": met, "roughnessFactor": rough}
         if "tex" in ex:
             st["baseColorMap"] = VPATH + ex["tex"]
+        if "nrm" in ex:
+            st["normalMap"] = VPATH + ex["nrm"]
+        if "detail" in ex:
+            st["detailMap"] = VPATH + ex["detail"]
+            st["detailScale"] = [0.5, 0.5]
         if ex.get("instance"):
             st["instanceBaseColor"] = True
             st["clearCoatFactor"] = 1.0
