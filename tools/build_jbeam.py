@@ -477,8 +477,8 @@ ACC = {
 }
 
 # =============================================================== configs + info
-PAINT = {"baseColor": [0.50, 0.035, 0.04, 1.2], "metallic": 0.1, "roughness": 0.55,
-         "clearcoat": 0.6, "clearcoatRoughness": 0.2}
+PAINT = {"baseColor": [0.62, 0.02, 0.025, 1.2], "metallic": 0.05, "roughness": 0.35,
+         "clearcoat": 0.5, "clearcoatRoughness": 0.2}
 CONFIGS = {
     "bobs_daily": ({"bt_toolbox": "bt_toolbox_uws", "bt_plowmount": "bt_plowmount_western", "bt_plow": ""},
                    {"Configuration": "Bob's Truck (Plow Frame)", "Value": 9500,

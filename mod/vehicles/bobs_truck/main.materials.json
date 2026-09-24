@@ -321,6 +321,31 @@
     "materialTag1": "vehicle",
     "version": 1.5
   },
+  "bt_tire_side": {
+    "name": "bt_tire_side",
+    "mapTo": "bt_tire_side",
+    "class": "Material",
+    "persistentId": "b5307008-e0e1-549a-843a-3de1a1340120",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.85,
+        "baseColorMap": "vehicles/bobs_truck/bt_tire_side.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
   "bt_tread": {
     "name": "bt_tread",
     "mapTo": "bt_tread",
@@ -476,13 +501,13 @@
     "Stages": [
       {
         "baseColorFactor": [
-          0.2,
-          0.05,
-          0.05,
+          0.035,
+          0.032,
+          0.03,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.7
+        "roughnessFactor": 0.6
       },
       {},
       {},

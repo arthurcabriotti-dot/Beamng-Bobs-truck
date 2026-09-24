@@ -1,0 +1,146 @@
+"""Fit a pinhole camera to a reference photo from 2D<->3D point pairs, then overlay the model.
+
+usage: python3 tools/camfit.py            (fits every photo in PHOTOS, writes preview/overlay_*.jpg)
+"""
+import json
+import math
+import os
+import sys
+
+import numpy as np
+from PIL import Image
+from scipy.optimize import least_squares
+
+sys.path.insert(0, os.path.dirname(__file__))
+import build_truck as bt  # noqa: E402
+
+# Pixel positions were read off gridded copies of the photos.
+# 3D points use model coordinates (+X left, +Y back, +Z up). Hub faces sit ~0.12 m outboard of the
+# wheel centre plane; tyre contact = bottom of the outer sidewall.
+FL_HUB = (bt.TRACK_F + 0.115, 0.0, bt.TIRE_R)
+RL_HUB = (bt.TRACK_R + 0.13, bt.WB, bt.TIRE_R)
+FR_HUB = (-bt.TRACK_F - 0.115, 0.0, bt.TIRE_R)
+RR_HUB = (-bt.TRACK_R - 0.13, bt.WB, bt.TIRE_R)
+
+PHOTOS = {
+    "side_left": {
+        "size": (1600, 1200),
+        "guess": {"eye": (6.0, 1.6, 1.2), "target": (0.0, 1.7, 0.9), "fov": 70},
+        "points": [
+            (FL_HUB, (302, 852)),
+            (RL_HUB, (1270, 765)),
+            ((bt.TRACK_F + 0.10, 0.0, 0.01), (302, 975)),
+            ((bt.TRACK_R + 0.10, bt.WB, 0.01), (1270, 867)),
+            ((bt.TRACK_F + 0.10, 0.0, 2 * bt.TIRE_R - 0.01), (300, 716)),
+            ((bt.TRACK_R + 0.10, bt.WB, 2 * bt.TIRE_R - 0.01), (1270, 662)),
+        ],
+    },
+    "front_left": {
+        "size": (1600, 1200),
+        "guess": {"eye": (3.2, -2.6, 1.3), "target": (-0.3, 1.0, 0.9), "fov": 75},
+        "points": [
+            (FL_HUB, (848, 903)),
+            (RL_HUB, (1230, 690)),
+            ((bt.TRACK_F + 0.10, 0.0, 0.01), (812, 1073)),
+            ((bt.TRACK_R + 0.10, bt.WB, 0.01), (1212, 776)),
+            # (tyre tops are hidden inside the arches in this close shot)
+            ((0.72, -0.79, 1.10), (550, 668)),   # left headlight centre
+            ((0.72, -0.78, 0.86), (553, 745)),   # left parking lamp centre
+            ((0.80, 1.17, 1.85), (962, 345)),    # windshield top, left
+            ((-0.80, 1.17, 1.85), (655, 366)),   # windshield top, right
+            ((0.97, 0.84, 1.38), (950, 492)),    # windshield base, left
+            ((1.0, -0.72, 0.64), (630, 845)),    # front bumper left end, top
+        ],
+    },
+    "rear_left": {
+        "size": (1600, 1200),
+        "guess": {"eye": (3.0, 7.0, 0.4), "target": (0.0, 2.0, 1.0), "fov": 75},
+        "points": [
+            (RL_HUB, (635, 895)),
+            (FL_HUB, (125, 850)),
+            ((bt.TRACK_R + 0.10, bt.WB, 0.01), (650, 1015)),
+            ((bt.TRACK_F + 0.10, 0.0, 0.01), (145, 928)),
+            ((bt.TRACK_R + 0.10, bt.WB, 2 * bt.TIRE_R - 0.01), (640, 768)),
+            ((bt.TRACK_F + 0.10, 0.0, 2 * bt.TIRE_R - 0.01), (130, 770)),
+        ],
+    },
+    "rear_right": {
+        "size": (1600, 1200),
+        "guess": {"eye": (-2.0, 7.0, 1.3), "target": (0.0, 2.0, 0.9), "fov": 75},
+        "points": [
+            (RR_HUB, (805, 855)),
+            (FR_HUB, (1043, 690)),
+            ((-bt.TRACK_F - 0.10, 0.0, 0.01), (1040, 750)),
+            ((-bt.TRACK_F - 0.10, 0.0, 2 * bt.TIRE_R - 0.01), (1045, 615)),
+            ((-0.915, 4.43, 1.17), (582, 700)),   # right tail lamp centre
+            ((0.0, 4.448, 1.128), (372, 690)),   # centre of the CHEVROLET lettering
+        ],
+    },
+}
+
+
+def rot_from_angles(yaw, pitch, roll):
+    """Camera basis (right, up, forward) from yaw (about Z), pitch, roll."""
+    cy, sy = math.cos(yaw), math.sin(yaw)
+    cp, sp = math.cos(pitch), math.sin(pitch)
+    f = np.array([cy * cp, sy * cp, sp])
+    r0 = np.cross(f, [0, 0, 1.0])
+    r0 /= np.linalg.norm(r0)
+    u0 = np.cross(r0, f)
+    cr, sr = math.cos(roll), math.sin(roll)
+    r = cr * r0 + sr * u0
+    u = -sr * r0 + cr * u0
+    return r, u, f
+
+
+def project(params, P, size):
+    ex, ey, ez, yaw, pitch, roll, fl, k1 = params
+    r, u, f = rot_from_angles(yaw, pitch, roll)
+    rel = np.asarray(P, float) - np.array([ex, ey, ez])
+    x, y = rel @ r / (rel @ f), rel @ u / (rel @ f)
+    d = 1 + k1 * (x * x + y * y)   # radial (barrel/pincushion) lens distortion
+    W, H = size
+    return np.stack([W / 2 + fl * x * d, H / 2 - fl * y * d], axis=1)
+
+
+def initial(guess, size):
+    e = np.array(guess["eye"], float)
+    d = np.array(guess["target"], float) - e
+    yaw = math.atan2(d[1], d[0])
+    pitch = math.atan2(d[2], math.hypot(d[0], d[1]))
+    fl = 0.5 * size[1] / math.tan(math.radians(guess["fov"]) / 2)
+    return np.array([*e, yaw, pitch, 0.0, fl, 0.0])
+
+
+def fit(photo):
+    P = np.array([p for p, _ in photo["points"]], float)
+    Q = np.array([q for _, q in photo["points"]], float)
+    x0 = initial(photo["guess"], photo["size"])
+    k_ok = len(P) >= 8   # only fit distortion when there are enough points
+    lo = [-np.inf] * 7 + [-0.4 if k_ok else -1e-9]
+    hi = [np.inf] * 7 + [0.4 if k_ok else 1e-9]
+    res = least_squares(lambda p: (project(p, P, photo["size"]) - Q).ravel(), x0, bounds=(lo, hi))
+    err = np.abs(res.fun).reshape(-1, 2)
+    return res.x, float(np.sqrt((err ** 2).sum(1)).mean())
+
+
+def camera_from_params(params):
+    ex, ey, ez, yaw, pitch, roll, fl, k1 = params
+    r, u, f = rot_from_angles(yaw, pitch, roll)
+    return np.array([ex, ey, ez]), r, u, f, fl, k1
+
+
+if __name__ == "__main__":
+    from render import render_cam
+    out = {}
+    objs = bt.build_all()
+    for name, ph in PHOTOS.items():
+        params, err = fit(ph)
+        out[name] = [float(v) for v in params]
+        print(f"{name}: eye=({params[0]:.2f},{params[1]:.2f},{params[2]:.2f}) focal={params[6]:.0f}px k1={params[7]:+.3f}  mean err {err:.1f}px")
+        img = Image.open(os.path.join(bt.ROOT, "reference", f"{name}.jpg")).convert("RGB").resize(ph["size"])
+        ren, mask = render_cam(objs, camera_from_params(params), ph["size"], skip={"bt_plowblade"})
+        over = Image.composite(Image.blend(img, ren, 0.55), img, mask)
+        over.save(os.path.join(bt.ROOT, "preview", f"overlay_{name}.jpg"), quality=88)
+    with open(os.path.join(bt.ROOT, "tools", "cameras.json"), "w") as f:
+        json.dump(out, f, indent=1)

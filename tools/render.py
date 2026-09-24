@@ -27,10 +27,23 @@ def look_at(eye, target, up=(0, 0, 1)):
 
 
 def render(objs, eye, target, W=1200, H=800, fov=38, ss=2, skip=SKIP_DEFAULT, cols=None, bg=True):
+    eye, r, u, f = look_at(eye, target)
+    fl = 0.5 * H / math.tan(math.radians(fov) / 2)
+    return render_core(objs, eye, r, u, f, fl, W, H, ss, skip, cols, bg, ground=True)[0]
+
+
+def render_cam(objs, cam, size, skip=SKIP_DEFAULT, ss=2):
+    """Render with an explicit camera (eye, right, up, forward, focal_px); returns (image, model mask)."""
+    eye, r, u, f, fl = cam[:5]
+    k1 = cam[5] if len(cam) > 5 else 0.0
+    return render_core(objs, np.asarray(eye), np.asarray(r), np.asarray(u), np.asarray(f), fl,
+                       size[0], size[1], ss, skip, None, True, ground=False, k1=k1)
+
+
+def render_core(objs, eye, r, u, f, fl, W, H, ss, skip, cols, bg, ground, k1=0.0):
     cols = cols or bt.preview_colors()[0]
     Wi, Hi = W * ss, H * ss
-    eye, r, u, f = look_at(eye, target)
-    fl = 0.5 * Hi / math.tan(math.radians(fov) / 2)
+    fl = fl * ss
     zbuf = np.full((Hi, Wi), np.inf, dtype=np.float32)
     img = np.zeros((Hi, Wi, 3), dtype=np.float32)
     # background: sky gradient + ground
@@ -57,7 +70,7 @@ def render(objs, eye, target, W=1200, H=800, fov=38, ss=2, skip=SKIP_DEFAULT, co
     # ground quad
     gt = []
     step = 1.0
-    for gx in np.arange(-8, 8, step):
+    for gx in (np.arange(-8, 8, step) if ground else []):
         for gy in np.arange(-7, 11, step):
             gt += [((gx, gy, 0), (gx + step, gy, 0), (gx + step, gy + step, 0)),
                    ((gx, gy, 0), (gx + step, gy + step, 0), (gx, gy + step, 0))]
@@ -86,8 +99,10 @@ def render(objs, eye, target, W=1200, H=800, fov=38, ss=2, skip=SKIP_DEFAULT, co
             continue
         if np.any(z < near):
             continue  # skip clipping complexity (only ground could cross)
-        sx = Wi / 2 + fl * cx[i] / z
-        sy = Hi / 2 - fl * cy[i] / z
+        xn, yn = cx[i] / z, cy[i] / z
+        dd = 1 + k1 * (xn * xn + yn * yn)
+        sx = Wi / 2 + fl * xn * dd
+        sy = Hi / 2 - fl * yn * dd
         x0, x1 = int(max(0, math.floor(sx.min()))), int(min(Wi - 1, math.ceil(sx.max())))
         y0, y1 = int(max(0, math.floor(sy.min()))), int(min(Hi - 1, math.ceil(sy.max())))
         if x0 > x1 or y0 > y1:
@@ -118,7 +133,8 @@ def render(objs, eye, target, W=1200, H=800, fov=38, ss=2, skip=SKIP_DEFAULT, co
         blk[upd] = col[upd]
     out = np.clip(img, 0, 1) ** (1 / 1.6)
     im = Image.fromarray((out * 255).astype(np.uint8))
-    return im.resize((W, H), Image.LANCZOS)
+    mask = Image.fromarray((np.isfinite(zbuf) * 255).astype(np.uint8))
+    return im.resize((W, H), Image.LANCZOS), mask.resize((W, H), Image.LANCZOS)
 
 
 VIEWS = {

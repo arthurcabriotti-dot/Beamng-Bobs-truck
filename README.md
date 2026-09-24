@@ -2,8 +2,16 @@
 
 A drivable BeamNG.drive mod of Bob's **1985 Chevrolet K20**: square body, regular cab, long bed, 4x4. The mesh and physics were built from the photos in `reference/`.
 
-![front](preview/front_34.png)
-![rear](preview/rear_34.png)
+![front](preview/hero_front.png)
+![rear](preview/hero_rear.png)
+
+### Model vs. photos
+
+Each photo's camera was solved from the wheel positions (`tools/camfit.py`), and the model is rendered from that exact spot in Blender:
+
+![side](preview/compare_side_left.jpg)
+![front](preview/compare_front_left.jpg)
+![rear](preview/compare_rear_left.jpg)
 
 ## Install
 
@@ -16,8 +24,8 @@ A drivable BeamNG.drive mod of Bob's **1985 Chevrolet K20**: square body, regula
 
 | | |
 |---|---|
-| Body | '85-'86 square body regular cab long bed: argent egg-crate grille with bowtie, rectangular sealed-beam headlights, stamped CHEVROLET tailgate, 4-pane sliding rear window, chrome West Coast-style mirrors, dual fuel doors |
-| Wheels | Black 8-lug steelies, rusty locking hubs up front and full-floating hubs in the rear, ~32" all-terrain tires |
+| Body | '85-'86 square body regular cab long bed: shoulder crease line, arch lips, rounded bed corners, argent egg-crate grille with bowtie, rectangular sealed-beam headlights, stamped CHEVROLET tailgate, 4-pane sliding rear window, chrome mirrors, dual fuel doors, stake pockets, and the rust spots at the cab and bed corners |
+| Wheels | Black 8-lug steelies, chrome-dial locking hubs up front, rusty full-floating hubs in the rear, ~32" Yokohama Geolandar H/T tires with sidewall lettering |
 | Bumpers | Chrome front bumper; chrome rear step bumper with a diamond-plate top, receiver hitch and the CT "Classic Vehicle" plate |
 | Drivetrain | 350 V8 (~165 hp / 275 lb-ft), TH400 3-speed automatic, 4x4 (locked transfer case), 4.10 gears |
 | Suspension | Solid axles front and rear, steered front axle with king pins and a tie rod |
@@ -51,10 +59,19 @@ Interior (dash, seat, door panels), the engine bay, the grille/front straight on
 ## Rebuilding
 
 ```
-pip install numpy pillow
+pip install numpy pillow scipy bpy
 ./build.sh
 ```
 
-This regenerates the model (`tools/build_truck.py`), physics and configs (`tools/build_jbeam.py`), thumbnails, runs the checks and writes `dist/bobs_truck.zip`. `preview/bobs_truck.glb` is the model as glTF, and opens in any 3D viewer (Windows 3D Viewer, Blender, gltf-viewer.donmccurdy.com).
+Pipeline:
+1. `tools/build_truck.py`: procedural geometry (panels, crease lines, lamps, wheels…), textures and BeamNG materials
+2. `tools/build_jbeam.py`: physics, configs, info files
+3. `tools/blender_build.py`: runs Blender headless (`bpy`). It welds the meshes, bevels every hard edge, smooths normals, exports the final `bobs_truck.dae` and `preview/bobs_truck.glb`, and renders the vehicle-selector thumbnails. Run it without `--no-render` to get the Cycles comparison renders in `preview/`.
+4. `tools/validate.py` and `tools/simcheck.py`: consistency checks and an offline physics sanity simulation
+5. Everything is zipped into `dist/bobs_truck.zip`.
+
+`tools/camfit.py` re-solves the photo cameras and writes `preview/overlay_*.jpg`. Drop new photos in `reference/` and add a few wheel-point correspondences to use them.
+
+`preview/bobs_truck.glb` is the finished model as glTF, and opens in any 3D viewer (Windows 3D Viewer, Blender, gltf-viewer.donmccurdy.com).
 
 Coordinates: +X = left, +Y = rearward, +Z = up, metres; front axle at y=0, rear axle at y=3.34 (131.5" wheelbase).
