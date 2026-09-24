@@ -666,5 +666,389 @@
     "materialTag0": "beamng",
     "materialTag1": "vehicle",
     "version": 1.5
+  },
+  "bt_photo_body_front": {
+    "name": "bt_photo_body_front",
+    "mapTo": "bt_photo_body_front",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_body_front.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_body_cab": {
+    "name": "bt_photo_body_cab",
+    "mapTo": "bt_photo_body_cab",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_body_cab.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_bed": {
+    "name": "bt_photo_bed",
+    "mapTo": "bt_photo_bed",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_bed.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_tailgate": {
+    "name": "bt_photo_tailgate",
+    "mapTo": "bt_photo_tailgate",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_tailgate.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_bumper_F": {
+    "name": "bt_photo_bumper_F",
+    "mapTo": "bt_photo_bumper_F",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_bumper_F.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_bumper_R": {
+    "name": "bt_photo_bumper_R",
+    "mapTo": "bt_photo_bumper_R",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_bumper_R.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_toolbox": {
+    "name": "bt_photo_toolbox",
+    "mapTo": "bt_photo_toolbox",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_toolbox.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_plowmount": {
+    "name": "bt_photo_plowmount",
+    "mapTo": "bt_photo_plowmount",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_plowmount.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_wheel_FL": {
+    "name": "bt_photo_wheel_FL",
+    "mapTo": "bt_photo_wheel_FL",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_FL.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_wheel_FR": {
+    "name": "bt_photo_wheel_FR",
+    "mapTo": "bt_photo_wheel_FR",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_FR.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_wheel_RL": {
+    "name": "bt_photo_wheel_RL",
+    "mapTo": "bt_photo_wheel_RL",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_RL.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_wheel_RR": {
+    "name": "bt_photo_wheel_RR",
+    "mapTo": "bt_photo_wheel_RR",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_RR.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_tire_FL": {
+    "name": "bt_photo_tire_FL",
+    "mapTo": "bt_photo_tire_FL",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_FL.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_tire_FR": {
+    "name": "bt_photo_tire_FR",
+    "mapTo": "bt_photo_tire_FR",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_FR.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_tire_RL": {
+    "name": "bt_photo_tire_RL",
+    "mapTo": "bt_photo_tire_RL",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_RL.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_photo_tire_RR": {
+    "name": "bt_photo_tire_RR",
+    "mapTo": "bt_photo_tire_RR",
+    "class": "Material",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_RR.png",
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
   }
 }
