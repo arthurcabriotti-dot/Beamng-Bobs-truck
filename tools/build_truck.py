@@ -46,7 +46,13 @@ MATS = {
     "bt_black":        ((0.018, 0.018, 0.018, 1), 0.0, 0.55, {}),
     "bt_rubber":       ((0.025, 0.025, 0.025, 1), 0.0, 0.85, {}),
     "bt_glass":        ((0.12, 0.14, 0.15, 0.28), 0.0, 0.05, {"translucent": True, "doubleSided": True}),
+    "bt_mirror":       ((0.75, 0.78, 0.80, 1), 1.0, 0.02, {}),
     "bt_headlight":    ((0.85, 0.86, 0.84, 1), 0.6, 0.15, {}),
+    "bt_headlight_lens": ((1, 1, 1, 0.75), 0.0, 0.05, {"tex": "bt_headlight_lens.png", "translucent": True}),
+    "bt_park_lens":    ((1, 1, 1, 0.8), 0.0, 0.08, {"tex": "bt_park_lens.png", "translucent": True}),
+    "bt_tail_lens":    ((1, 1, 1, 1), 0.0, 0.08, {"tex": "bt_tail_lens.png"}),
+    "bt_grille_dark":  ((0.22, 0.22, 0.23, 1), 0.6, 0.45, {}),
+    "bt_bowtie":       ((0.80, 0.66, 0.25, 1), 0.9, 0.25, {}),
     "bt_lamp_clear":   ((0.80, 0.80, 0.76, 1), 0.3, 0.2, {}),
     "bt_taillight":    ((0.55, 0.02, 0.02, 1), 0.2, 0.15, {}),
     "bt_amber":        ((0.95, 0.45, 0.02, 1), 0.2, 0.2, {}),
@@ -267,6 +273,19 @@ def arch_lip(o, s, pts, w, proud=0.005):
                         outward=(0, (c[0] + d[0]) / 2 - yc, (c[1] + d[1]) / 2 - zc))
 
 
+def lamp(o, s, x0, x1, z0, z1, lens, depth=0.045, bezel=0.012, yface=-0.79):
+    """Recessed lamp: black bucket, chrome bezel frame, reflector bowl and textured lens."""
+    a, b = sorted((s * x0, s * x1))
+    o.box("bt_black", (a, yface + 0.005, z0), (b, yface + depth + 0.02, z1))              # bucket
+    for (xa, xb, za, zb) in ((x0, x1, z0, z0 + bezel), (x0, x1, z1 - bezel, z1),
+                             (x0, x0 + bezel, z0, z1), (x1 - bezel, x1, z0, z1)):
+        box_s(o, "bt_chrome", s, xa, xb, yface - 0.008, yface + 0.005, za, zb)
+    ia, ib = sorted((s * (x0 + bezel), s * (x1 - bezel)))
+    o.box("bt_chrome", (ia, yface + depth, z0 + bezel), (ib, yface + depth + 0.004, z1 - bezel))  # reflector
+    uv = ((1, 0), (0, 0), (0, 1), (1, 1)) if s > 0 else ((0, 0), (1, 0), (1, 1), (0, 1))
+    quad_y(o, lens, yface - 0.001, ia, ib, z0 + bezel, z1 - bezel, -1, uv=uv)
+
+
 def rust_patch(o, s, y0, y1, z0, z1, x=None):
     x = HALF_W + 0.0025 if x is None else x
     quad_x(o, "bt_rust", s * x, y0, y1, z0, z1, s)
@@ -316,32 +335,34 @@ def build_front():
     # outer frame bars (argent)
     o.box("bt_argent", (-0.865, yf, 1.195), (0.865, -0.76, 1.295))   # header
     o.box("bt_argent", (-0.865, yf, 0.700), (0.865, -0.76, 0.745))   # bottom
-    for s in (1, -1):
-        box_s(o, "bt_argent", s, 0.835, 0.865, yf, -0.76, 0.70, 1.295)   # outer post
-        box_s(o, "bt_argent", s, 0.565, 0.605, yf, -0.76, 0.70, 1.195)   # grille/lamp divider
-        box_s(o, "bt_argent", s, 0.605, 0.835, yf, -0.76, 0.975, 1.005)  # lamp divider
-        # headlight bucket + sealed beam
-        box_s(o, "bt_black", s, 0.605, 0.835, -0.77, -0.74, 1.005, 1.195)
-        box_s(o, "bt_chrome", s, 0.612, 0.828, -0.785, -0.77, 1.012, 1.188)
-        box_s(o, "bt_headlight", s, 0.620, 0.820, -0.792, -0.785, 1.020, 1.180)
-        # parking / turn lamp
-        box_s(o, "bt_black", s, 0.605, 0.835, -0.77, -0.74, 0.745, 0.975)
-        box_s(o, "bt_lamp_clear", s, 0.620, 0.820, -0.785, -0.77, 0.765, 0.960)
-    # grille insert: dark back plane + argent egg-crate
-    o.box("bt_black", (-0.565, -0.745, 0.745), (0.565, -0.73, 1.195))
-    for z in (0.890, 1.040):
-        o.box("bt_argent", (-0.565, -0.805, z), (0.565, -0.745, z + 0.025))
-    for x in (-0.285, 0.0, 0.285):
-        o.box("bt_argent", (x - 0.012, -0.805, 0.745), (x + 0.012, -0.745, 1.195))
-    # chevy bowtie in the grille centre
-    bow = [(-0.07, 0.955), (-0.025, 0.955), (-0.02, 0.945), (0.02, 0.945), (0.025, 0.955), (0.07, 0.955),
-           (0.06, 0.985), (0.025, 0.985), (0.02, 0.995), (-0.02, 0.995), (-0.025, 0.985), (-0.06, 0.985)]
-    o.extrude_y("bt_argent", [(x, z) for x, z in bow], -0.82, -0.805)
+    for s_ in (1, -1):
+        box_s(o, "bt_argent", s_, 0.835, 0.865, yf, -0.76, 0.70, 1.295)   # outer post
+        box_s(o, "bt_argent", s_, 0.565, 0.605, yf, -0.76, 0.70, 1.195)   # grille/lamp divider
+        box_s(o, "bt_argent", s_, 0.605, 0.835, yf, -0.76, 0.975, 1.005)  # lamp divider
+        lamp(o, s_, 0.605, 0.835, 1.005, 1.195, "bt_headlight_lens")    # sealed-beam headlight
+        lamp(o, s_, 0.605, 0.835, 0.745, 0.975, "bt_park_lens", depth=0.03)  # parking/turn lamp
+    # grille: dark back, 3 x 4 egg-crate of thin argent bars, each cell with fine inner slats
+    o.box("bt_black", (-0.565, -0.735, 0.745), (0.565, -0.725, 1.195))
+    zs = [0.745, 0.895, 1.045, 1.195]
+    xs = [-0.565, -0.2825, 0.0, 0.2825, 0.565]
+    for z in zs[1:-1]:
+        o.box("bt_argent", (-0.565, -0.808, z - 0.009), (0.565, -0.740, z + 0.009))
+    for x in xs[1:-1]:
+        o.box("bt_argent", (x - 0.009, -0.808, 0.745), (x + 0.009, -0.740, 1.195))
+    for a, b in zip(zs, zs[1:]):
+        for k in range(1, 4):
+            z = a + (b - a) * k / 4
+            o.box("bt_grille_dark", (-0.565, -0.790, z - 0.004), (0.565, -0.745, z + 0.004))
+    # chevy bowtie on a centre plate
+    o.box("bt_argent", (-0.10, -0.812, 0.925), (0.10, -0.806, 1.015))
+    bow = [(-0.075, 0.953), (-0.027, 0.953), (-0.021, 0.941), (0.021, 0.941), (0.027, 0.953), (0.075, 0.953),
+           (0.064, 0.987), (0.027, 0.987), (0.021, 0.999), (-0.021, 0.999), (-0.027, 0.987), (-0.064, 0.987)]
+    o.extrude_y("bt_bowtie", bow, -0.822, -0.812)
+    # radiator core behind grille
+    o.box("bt_under", (-0.62, -0.70, 0.72), (0.62, -0.64, 1.05))
     gz = lambda p: (p[0], p[1], 0.655 + (p[2] - 0.70) * (1.10 - 0.655) / (1.295 - 0.70))
     front_obj.merge(o.transformed(gz))
     o = front_obj
-    # radiator core behind grille
-    o.box("bt_under", (-0.62, -0.70, 0.72), (0.62, -0.64, 1.20))
 
 
 # ------------------------------------------------------------------ cab
@@ -426,8 +447,9 @@ def build_cab():
         box_s(o, "bt_chrome", s, HALF_W - 0.01, 1.03, 0.875, 0.945, 1.29, 1.37)
         for z in (1.33, 1.43):
             box_s(o, "bt_chrome", s, HALF_W - 0.01, 1.14, 0.90, 0.915, z, z + 0.014)
-        box_s(o, "bt_chrome", s, 1.10, 1.28, 0.88, 0.935, 1.36, 1.62)
-        box_s(o, "bt_glass", s, 1.108, 1.272, 0.936, 0.938, 1.368, 1.612)
+        head = rounded_rect(1.19 * s, 1.49, 0.18, 0.26, 0.03)
+        o.extrude_y("bt_chrome", head, 0.88, 0.935)
+        o.extrude_y("bt_mirror", rounded_rect(1.19 * s, 1.49, 0.165, 0.245, 0.024), 0.935, 0.937)
     # --- interior
     i = o
     i.box("bt_seat", (-0.86, 1.40, 0.92), (0.86, 1.83, 1.06))                    # cushion
@@ -485,11 +507,9 @@ def build_bed():
             o.extrude_z("bt_paint", plan, za, zb)
         # tail lamp: chrome bezel, red lens with ribs, clear backup lens
         box_s(o, "bt_chrome", s, 0.846, 0.962, BED_Y1, BED_Y1 + 0.012, 0.925, 1.325)
-        box_s(o, "bt_taillight", s, 0.854, 0.954, BED_Y1 + 0.012, BED_Y1 + 0.017, 1.015, 1.315)
-        for zr in range(6):
-            z = 1.03 + zr * 0.048
-            box_s(o, "bt_taillight", s, 0.856, 0.952, BED_Y1 + 0.017, BED_Y1 + 0.019, z, z + 0.012)
-        box_s(o, "bt_lamp_clear", s, 0.854, 0.954, BED_Y1 + 0.012, BED_Y1 + 0.017, 0.935, 1.008)
+        xa, xb = sorted((s * 0.854, s * 0.954))
+        uv = ((0, 0), (1, 0), (1, 1), (0, 1)) if s > 0 else ((1, 0), (0, 0), (0, 1), (1, 1))
+        quad_y(o, "bt_tail_lens", BED_Y1 + 0.0125, xa, xb, 0.935, 1.315, 1, uv=uv)
         # rear side marker (red)
         quad_x(o, "bt_taillight", s * (HALF_W + 0.002), 4.20, 4.30, 0.88, 0.92, s)
         # fuel door (rounded, set in a dark gap)
@@ -707,15 +727,19 @@ def build_plowmount():
         box_s(o, "bt_frame", s, 0.335, 0.385, -1.155, -1.105, 0.40, 1.11)   # light towers
         for xs_ in (0.49, 0.57):   # two rusty threaded studs
             o.cylinder("bt_rust", (s * xs_, -1.12, 1.11), (s * xs_, -1.12, 1.17), 0.008, segs=6)
-        box_s(o, "bt_black", s, 0.40, 0.66, -1.10, -0.96, 1.17, 1.40)        # housing
-        box_s(o, "bt_amber", s, 0.41, 0.65, -1.107, -1.10, 1.345, 1.39)      # turn lens on top
-        box_s(o, "bt_black", s, 0.41, 0.65, -1.107, -1.10, 1.335, 1.345)
-        box_s(o, "bt_chrome", s, 0.41, 0.65, -1.106, -1.10, 1.18, 1.335)     # reflector
-        box_s(o, "bt_headlight", s, 0.415, 0.645, -1.112, -1.106, 1.185, 1.33)
+        cx = s * 0.53
+        o.extrude_y("bt_black", rounded_rect(cx, 1.285, 0.27, 0.24, 0.05), -1.10, -0.94)       # housing
+        o.extrude_y("bt_black", rounded_rect(cx, 1.285, 0.24, 0.20, 0.04), -0.94, -0.90)       # back taper
+        o.extrude_y("bt_chrome", rounded_rect(cx, 1.285, 0.25, 0.22, 0.045), -1.108, -1.10)    # bezel
+        lens = rounded_rect(cx, 1.265, 0.225, 0.155, 0.035)
+        o.extrude_y("bt_headlight_lens", lens, -1.114, -1.108)
+        o.extrude_y("bt_amber", rounded_rect(cx, 1.372, 0.20, 0.035, 0.012), -1.114, -1.108)  # turn strip
     o.box("bt_frame", (-0.62, -1.16, 1.08), (0.62, -1.10, 1.11))            # light bar
     o.box("bt_frame", (-0.52, -0.99, 0.36), (0.52, -0.87, 0.46))            # receiver (behind bumper)
-    o.box("bt_yellow", (-0.30, -1.05, 0.62), (-0.06, -0.87, 0.84))          # hydraulic pump
-    o.cylinder("bt_black", (-0.18, -1.05, 0.72), (-0.18, -1.12, 0.72), 0.04, segs=10)
+    o.extrude_y("bt_yellow", rounded_rect(-0.18, 0.72, 0.22, 0.20, 0.03), -1.03, -0.87)    # hydraulic unit
+    o.cylinder("bt_black", (-0.18, -1.03, 0.72), (-0.18, -1.10, 0.72), 0.055, segs=16)     # motor
+    o.cylinder("bt_black", (-0.24, -1.00, 0.84), (-0.24, -0.93, 1.02), 0.012, segs=8)     # hoses
+    o.cylinder("bt_black", (-0.12, -1.00, 0.84), (-0.12, -0.93, 1.02), 0.012, segs=8)
     o.cylinder("bt_black", (-0.12, -1.02, 0.86), (-0.12, -1.02, 1.05), 0.025, segs=10)  # pump reservoir
 
 
@@ -793,6 +817,38 @@ def build_textures():
     img = img.transpose(Image.FLIP_LEFT_RIGHT)
     img.save(os.path.join(VEH, "bt_tire_side.png"))
 
+    # headlight lens: fine prism flutes + faint reflector glow
+    W, H = 256, 192
+    img = Image.new("RGBA", (W, H), (205, 210, 212, 170))
+    d = ImageDraw.Draw(img)
+    for x in range(0, W, 8):
+        d.line([(x, 0), (x, H)], fill=(245, 248, 250, 200), width=2)
+        d.line([(x + 4, 0), (x + 4, H)], fill=(150, 156, 160, 170), width=1)
+    for y in range(0, H, 24):
+        d.line([(0, y), (W, y)], fill=(170, 175, 180, 170), width=1)
+    d.ellipse([W / 2 - 40, H / 2 - 32, W / 2 + 40, H / 2 + 32], outline=(235, 238, 240, 220), width=3)
+    img.save(os.path.join(VEH, "bt_headlight_lens.png"))
+    # parking/turn lens: clear-amber with horizontal ribs
+    img = Image.new("RGBA", (256, 256), (230, 200, 150, 190))
+    d = ImageDraw.Draw(img)
+    for y in range(0, 256, 12):
+        d.rectangle([0, y, 256, y + 5], fill=(250, 230, 190, 210))
+    img.save(os.path.join(VEH, "bt_park_lens.png"))
+    # tail lamp: red upper with ribs, clear backup lamp at the bottom, black divider
+    W, H = 128, 512
+    img = Image.new("RGB", (W, H), (120, 8, 10))
+    d = ImageDraw.Draw(img)
+    split = int(H * (1.315 - 1.008) / (1.315 - 0.935))
+    for y in range(0, split, 16):
+        d.rectangle([0, y, W, y + 7], fill=(165, 16, 18))
+    for x in range(0, W, 16):
+        d.line([(x, 0), (x, split)], fill=(95, 5, 8), width=2)
+    d.rectangle([0, split, W, split + 8], fill=(15, 15, 15))
+    for y in range(split + 8, H, 10):
+        d.rectangle([0, y, W, y + 4], fill=(225, 225, 215))
+        d.rectangle([0, y + 5, W, y + 9], fill=(185, 185, 178))
+    img.save(os.path.join(VEH, "bt_tail_lens.png"))
+
     # tailgate lettering (embossed look, transparent background)
     W, H = 1024, 180
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -817,7 +873,8 @@ def build_textures():
     f1 = ImageFont.truetype(fontb, 30)
     f2 = ImageFont.truetype(fontb, 120)
     f3 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf", 26)
-    for txt, font, yy in (("CONNECTICUT", f1, 14), ("00-EXEK", f2, 58), ("Classic Vehicle", f3, 206)):
+    f2 = ImageFont.truetype(fontb, 96)
+    for txt, font, yy in (("CONNECTICUT", f1, 14), ("00-EXEK", f2, 70), ("Classic Vehicle", f3, 206)):
         tw = d.textlength(txt, font=font)
         d.text(((W - tw) / 2, yy), txt, font=font, fill=(20, 35, 100))
     img.save(os.path.join(VEH, "bt_plate.png"))
@@ -896,6 +953,7 @@ def build_all():
     build_toolbox()
     build_plowmount()
     build_plow()
+    OBJS["bt_engine_mesh"] = OBJS["bt_engine_mesh"].transformed(lambda p: (p[0], p[1], p[2] - 0.13 if p[2] > 0.7 else p[2]))
     for name in ("bt_bed", "bt_tailgate", "bt_bumper_R", "bt_frame_mesh"):
         OBJS[name] = OBJS[name].transformed(stretch_rear)
     return OBJS
@@ -913,6 +971,12 @@ def preview_colors():
             col = (0.05, 0.05, 0.05, 1)
         if name == "bt_tailgate_text":
             col = (0.3, 0.01, 0.01, 1)
+        if name == "bt_headlight_lens":
+            col = (0.80, 0.82, 0.83, 1)
+        if name == "bt_park_lens":
+            col = (0.90, 0.80, 0.60, 1)
+        if name == "bt_tail_lens":
+            col = (0.55, 0.04, 0.04, 1)
         if name == "bt_plate":
             col = (0.85, 0.88, 0.95, 1)
         if name == "bt_gauges":

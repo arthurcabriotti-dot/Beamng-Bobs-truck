@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 python3 tools/build_truck.py          # procedural geometry, textures, materials
 python3 tools/build_jbeam.py          # physics + configs
 # Blender: bevel/smooth, export final .dae + .glb, render selector thumbnails
-python3 tools/blender_build.py --photo --no-render --thumbs --samples 64
+python3 tools/blender_build.py --no-render --thumbs --samples 64
 python3 tools/validate.py
 python3 tools/simcheck.py
 

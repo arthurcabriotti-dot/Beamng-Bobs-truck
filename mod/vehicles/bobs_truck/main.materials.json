@@ -153,6 +153,30 @@
     "doubleSided": true,
     "dynamicCubemap": true
   },
+  "bt_mirror": {
+    "name": "bt_mirror",
+    "mapTo": "bt_mirror",
+    "class": "Material",
+    "persistentId": "5adc8f2e-c871-5179-92c0-f71281bfd0b4",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.75,
+          0.78,
+          0.8,
+          1
+        ],
+        "metallicFactor": 1.0,
+        "roughnessFactor": 0.02
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
   "bt_headlight": {
     "name": "bt_headlight",
     "mapTo": "bt_headlight",
@@ -168,6 +192,135 @@
         ],
         "metallicFactor": 0.6,
         "roughnessFactor": 0.15
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_headlight_lens": {
+    "name": "bt_headlight_lens",
+    "mapTo": "bt_headlight_lens",
+    "class": "Material",
+    "persistentId": "bbce1b49-4330-529c-b429-d4595dff9c93",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          0.75
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.05,
+        "baseColorMap": "vehicles/bobs_truck/bt_headlight_lens.png",
+        "opacityFactor": 0.75
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "translucent": true,
+    "translucentZWrite": false
+  },
+  "bt_park_lens": {
+    "name": "bt_park_lens",
+    "mapTo": "bt_park_lens",
+    "class": "Material",
+    "persistentId": "956b054d-d14c-5eb4-b735-2c37b46fe686",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          0.8
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.08,
+        "baseColorMap": "vehicles/bobs_truck/bt_park_lens.png",
+        "opacityFactor": 0.8
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "translucent": true,
+    "translucentZWrite": false
+  },
+  "bt_tail_lens": {
+    "name": "bt_tail_lens",
+    "mapTo": "bt_tail_lens",
+    "class": "Material",
+    "persistentId": "dc1cebad-4739-5f5e-8edc-ef2ec1672e81",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.08,
+        "baseColorMap": "vehicles/bobs_truck/bt_tail_lens.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_grille_dark": {
+    "name": "bt_grille_dark",
+    "mapTo": "bt_grille_dark",
+    "class": "Material",
+    "persistentId": "ef8bfc89-323f-586e-948e-43b81b3481c8",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.22,
+          0.22,
+          0.23,
+          1
+        ],
+        "metallicFactor": 0.6,
+        "roughnessFactor": 0.45
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_bowtie": {
+    "name": "bt_bowtie",
+    "mapTo": "bt_bowtie",
+    "class": "Material",
+    "persistentId": "50ccd5f0-e18d-521e-b435-863e0f960722",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.8,
+          0.66,
+          0.25,
+          1
+        ],
+        "metallicFactor": 0.9,
+        "roughnessFactor": 0.25
       },
       {},
       {},
@@ -658,390 +811,6 @@
         "metallicFactor": 0.0,
         "roughnessFactor": 0.4,
         "baseColorMap": "vehicles/bobs_truck/bt_gauges.png"
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_body_front": {
-    "name": "bt_photo_body_front",
-    "mapTo": "bt_photo_body_front",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_body_front.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_body_cab": {
-    "name": "bt_photo_body_cab",
-    "mapTo": "bt_photo_body_cab",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_body_cab.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_bed": {
-    "name": "bt_photo_bed",
-    "mapTo": "bt_photo_bed",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_bed.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_tailgate": {
-    "name": "bt_photo_tailgate",
-    "mapTo": "bt_photo_tailgate",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_tailgate.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_bumper_F": {
-    "name": "bt_photo_bumper_F",
-    "mapTo": "bt_photo_bumper_F",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_bumper_F.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_bumper_R": {
-    "name": "bt_photo_bumper_R",
-    "mapTo": "bt_photo_bumper_R",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_bumper_R.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_toolbox": {
-    "name": "bt_photo_toolbox",
-    "mapTo": "bt_photo_toolbox",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_toolbox.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_plowmount": {
-    "name": "bt_photo_plowmount",
-    "mapTo": "bt_photo_plowmount",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_plowmount.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_wheel_FL": {
-    "name": "bt_photo_wheel_FL",
-    "mapTo": "bt_photo_wheel_FL",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_FL.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_wheel_FR": {
-    "name": "bt_photo_wheel_FR",
-    "mapTo": "bt_photo_wheel_FR",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_FR.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_wheel_RL": {
-    "name": "bt_photo_wheel_RL",
-    "mapTo": "bt_photo_wheel_RL",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_RL.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_wheel_RR": {
-    "name": "bt_photo_wheel_RR",
-    "mapTo": "bt_photo_wheel_RR",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_wheel_RR.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_tire_FL": {
-    "name": "bt_photo_tire_FL",
-    "mapTo": "bt_photo_tire_FL",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_FL.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_tire_FR": {
-    "name": "bt_photo_tire_FR",
-    "mapTo": "bt_photo_tire_FR",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_FR.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_tire_RL": {
-    "name": "bt_photo_tire_RL",
-    "mapTo": "bt_photo_tire_RL",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_RL.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
-      },
-      {},
-      {},
-      {}
-    ],
-    "materialTag0": "beamng",
-    "materialTag1": "vehicle",
-    "version": 1.5
-  },
-  "bt_photo_tire_RR": {
-    "name": "bt_photo_tire_RR",
-    "mapTo": "bt_photo_tire_RR",
-    "class": "Material",
-    "Stages": [
-      {
-        "baseColorMap": "vehicles/bobs_truck/bt_photo_tire_RR.png",
-        "baseColorFactor": [
-          1,
-          1,
-          1,
-          1
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.45
       },
       {},
       {},

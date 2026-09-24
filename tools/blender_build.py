@@ -152,6 +152,22 @@ def make_materials():
     t = tex_node(nt, img("bt_tailgate_text.png"), b)
     nt.links.new(t.outputs["Alpha"], b.inputs["Alpha"])
     M["bt_tailgate_text"] = m
+    for name, alpha in (("bt_headlight_lens", 0.55), ("bt_park_lens", 0.6)):
+        m, nt, b = principled(name, (1, 1, 1, 1), 0.0, 0.03)
+        t = tex_node(nt, img(name + ".png"), b)
+        bump_from(nt, b, t, 0.15)
+        b.inputs["Transmission Weight"].default_value = alpha
+        M[name] = m
+    m, nt, b = principled("bt_tail_lens", (1, 1, 1, 1), 0.0, 0.06)
+    t = tex_node(nt, img("bt_tail_lens.png"), b)
+    bump_from(nt, b, t, 0.2)
+    M["bt_tail_lens"] = m
+    M["bt_grille_dark"] = principled("bt_grille_dark", (0.18, 0.18, 0.19, 1), 0.6, 0.45)[0]
+    M["bt_bowtie"] = principled("bt_bowtie", (0.75, 0.58, 0.18, 1), 0.9, 0.25)[0]
+    M["bt_mirror"] = principled("bt_mirror", (0.9, 0.92, 0.93, 1), 1.0, 0.01)[0]
+    for name, (c, met, rough, ex) in bt.MATS.items():   # anything not hand-tuned above
+        if name not in M:
+            M[name] = principled(name, c, met, rough)[0]
     return M
 
 

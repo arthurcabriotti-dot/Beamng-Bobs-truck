@@ -70,6 +70,8 @@ Pipeline:
 4. `tools/validate.py` and `tools/simcheck.py`: consistency checks and an offline physics sanity simulation
 5. Everything is zipped into `dist/bobs_truck.zip`.
 
+The model uses modelled parts and hand-made textures only. `--photo` on `blender_build.py` is an optional experiment that projects the photos onto the surfaces. It isn't used for the mod.
+
 `tools/camfit.py` re-solves the photo cameras and writes `preview/overlay_*.jpg`. Drop new photos in `reference/` and add a few wheel-point correspondences to use them.
 
 `preview/bobs_truck.glb` is the finished model as glTF, and opens in any 3D viewer (Windows 3D Viewer, Blender, gltf-viewer.donmccurdy.com).
