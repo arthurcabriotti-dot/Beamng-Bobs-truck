@@ -1,0 +1,12 @@
+{
+ "Configuration": "Bob's Truck (Plowing)",
+ "Value": 11300,
+ "Description": "Western straight blade hung on the front, ready for a Connecticut snowstorm.",
+ "Drivetrain": "4WD",
+ "Transmission": "Automatic",
+ "Fuel Type": "Gasoline",
+ "Power": 167,
+ "Torque": 372,
+ "Weight": 2084,
+ "Config Type": "Factory"
+}

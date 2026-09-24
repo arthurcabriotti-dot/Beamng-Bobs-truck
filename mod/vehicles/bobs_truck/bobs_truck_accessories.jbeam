@@ -1,0 +1,542 @@
+{
+ "bt_toolbox_uws": {
+  "information": {
+   "authors": "Bob's Truck mod",
+   "name": "UWS Crossover Toolbox",
+   "value": 350
+  },
+  "slotType": "bt_toolbox",
+  "flexbodies": [
+   [
+    "mesh",
+    "[group]:",
+    "nonFlexMaterials"
+   ],
+   [
+    "bt_toolbox",
+    [
+     "bt_bed"
+    ]
+   ]
+  ],
+  "nodes": [
+   [
+    "id",
+    "posX",
+    "posY",
+    "posZ"
+   ],
+   {
+    "group": "bt_bed",
+    "nodeWeight": 6.0
+   },
+   [
+    "tb1l",
+    0.95,
+    2.32,
+    1.55
+   ],
+   [
+    "tb1r",
+    -0.95,
+    2.32,
+    1.55
+   ],
+   {
+    "group": ""
+   }
+  ],
+  "beams": [
+   [
+    "id1:",
+    "id2:"
+   ],
+   {
+    "beamSpring": 1001000,
+    "beamDamp": 80,
+    "beamDeform": 30000,
+    "beamStrength": "FLT_MAX"
+   },
+   [
+    "tb1l",
+    "tb1r"
+   ],
+   [
+    "tb1l",
+    "bb0lt"
+   ],
+   [
+    "tb1l",
+    "bb1lt"
+   ],
+   [
+    "tb1l",
+    "bb0rt"
+   ],
+   [
+    "tb1l",
+    "bb0lb"
+   ],
+   [
+    "tb1r",
+    "bb0rt"
+   ],
+   [
+    "tb1r",
+    "bb1rt"
+   ],
+   [
+    "tb1r",
+    "bb0lt"
+   ],
+   [
+    "tb1r",
+    "bb0rb"
+   ]
+  ]
+ },
+ "bt_plowmount_western": {
+  "information": {
+   "authors": "Bob's Truck mod",
+   "name": "Western Unimount Plow Frame + Lights",
+   "value": 900
+  },
+  "slotType": "bt_plowmount",
+  "slots": [
+   [
+    "type",
+    "default",
+    "description"
+   ],
+   [
+    "bt_plow",
+    "",
+    "Plow Blade"
+   ]
+  ],
+  "flexbodies": [
+   [
+    "mesh",
+    "[group]:",
+    "nonFlexMaterials"
+   ],
+   [
+    "bt_plowmount",
+    [
+     "bt_plowmount"
+    ]
+   ]
+  ],
+  "nodes": [
+   [
+    "id",
+    "posX",
+    "posY",
+    "posZ"
+   ],
+   {
+    "group": "bt_plowmount",
+    "nodeWeight": 16.0
+   },
+   [
+    "pm1l",
+    0.42,
+    -1.14,
+    0.42
+   ],
+   [
+    "pm1r",
+    -0.42,
+    -1.14,
+    0.42
+   ],
+   [
+    "pm2l",
+    0.36,
+    -1.13,
+    1.36
+   ],
+   [
+    "pm2r",
+    -0.36,
+    -1.13,
+    1.36
+   ],
+   [
+    "pm3",
+    0.0,
+    -1.2,
+    0.4
+   ],
+   {
+    "group": ""
+   }
+  ],
+  "beams": [
+   [
+    "id1:",
+    "id2:"
+   ],
+   {
+    "beamSpring": 6001000,
+    "beamDamp": 250,
+    "beamDeform": 150000,
+    "beamStrength": "FLT_MAX"
+   },
+   [
+    "pm1l",
+    "pm1r"
+   ],
+   [
+    "pm2l",
+    "pm2r"
+   ],
+   [
+    "pm1l",
+    "pm2l"
+   ],
+   [
+    "pm1r",
+    "pm2r"
+   ],
+   [
+    "pm1l",
+    "pm2r"
+   ],
+   [
+    "pm1r",
+    "pm2l"
+   ],
+   [
+    "pm3",
+    "pm1l"
+   ],
+   [
+    "pm3",
+    "pm1r"
+   ],
+   [
+    "pm3",
+    "pm2l"
+   ],
+   [
+    "pm3",
+    "pm2r"
+   ],
+   [
+    "pm1l",
+    "fr0lb"
+   ],
+   [
+    "pm1l",
+    "fr0lt"
+   ],
+   [
+    "pm1l",
+    "fr1lb"
+   ],
+   [
+    "pm1r",
+    "fr0rb"
+   ],
+   [
+    "pm1r",
+    "fr0rt"
+   ],
+   [
+    "pm1r",
+    "fr1rb"
+   ],
+   [
+    "pm3",
+    "fr0lb"
+   ],
+   [
+    "pm3",
+    "fr0rb"
+   ],
+   [
+    "pm2l",
+    "fr0lt"
+   ],
+   [
+    "pm2r",
+    "fr0rt"
+   ],
+   [
+    "pm2l",
+    "bf0lt"
+   ],
+   [
+    "pm2r",
+    "bf0rt"
+   ],
+   [
+    "pm2l",
+    "fr1lt"
+   ],
+   [
+    "pm2r",
+    "fr1rt"
+   ]
+  ],
+  "triangles": [
+   [
+    "id1:",
+    "id2:",
+    "id3:"
+   ],
+   {
+    "groundModel": "metal"
+   },
+   [
+    "pm1l",
+    "pm1r",
+    "pm2r"
+   ],
+   [
+    "pm1l",
+    "pm2r",
+    "pm2l"
+   ]
+  ]
+ },
+ "bt_plow_western": {
+  "information": {
+   "authors": "Bob's Truck mod",
+   "name": "Western 7.5' Straight Blade (raised)",
+   "value": 1800
+  },
+  "slotType": "bt_plow",
+  "flexbodies": [
+   [
+    "mesh",
+    "[group]:",
+    "nonFlexMaterials"
+   ],
+   [
+    "bt_plowblade",
+    [
+     "bt_plow"
+    ]
+   ]
+  ],
+  "nodes": [
+   [
+    "id",
+    "posX",
+    "posY",
+    "posZ"
+   ],
+   {
+    "group": "bt_plow",
+    "nodeWeight": 30.0
+   },
+   [
+    "pb1l",
+    1.14,
+    -1.42,
+    0.18
+   ],
+   [
+    "pb1r",
+    -1.14,
+    -1.42,
+    0.18
+   ],
+   [
+    "pb2l",
+    1.14,
+    -1.4,
+    0.88
+   ],
+   [
+    "pb2r",
+    -1.14,
+    -1.4,
+    0.88
+   ],
+   [
+    "pb3l",
+    0.5,
+    -1.28,
+    0.45
+   ],
+   [
+    "pb3r",
+    -0.5,
+    -1.28,
+    0.45
+   ],
+   [
+    "pb4",
+    0.0,
+    -1.44,
+    0.18
+   ],
+   {
+    "group": ""
+   }
+  ],
+  "beams": [
+   [
+    "id1:",
+    "id2:"
+   ],
+   {
+    "beamSpring": 8001000,
+    "beamDamp": 300,
+    "beamDeform": 200000,
+    "beamStrength": "FLT_MAX"
+   },
+   [
+    "pb1l",
+    "pb1r"
+   ],
+   [
+    "pb2l",
+    "pb2r"
+   ],
+   [
+    "pb1l",
+    "pb2l"
+   ],
+   [
+    "pb1r",
+    "pb2r"
+   ],
+   [
+    "pb1l",
+    "pb2r"
+   ],
+   [
+    "pb1r",
+    "pb2l"
+   ],
+   [
+    "pb3l",
+    "pb3r"
+   ],
+   [
+    "pb3l",
+    "pb1l"
+   ],
+   [
+    "pb3l",
+    "pb2l"
+   ],
+   [
+    "pb3r",
+    "pb1r"
+   ],
+   [
+    "pb3r",
+    "pb2r"
+   ],
+   [
+    "pb3l",
+    "pb2r"
+   ],
+   [
+    "pb3r",
+    "pb2l"
+   ],
+   [
+    "pb4",
+    "pb1l"
+   ],
+   [
+    "pb4",
+    "pb1r"
+   ],
+   [
+    "pb4",
+    "pb3l"
+   ],
+   [
+    "pb4",
+    "pb3r"
+   ],
+   [
+    "pb4",
+    "pb2l"
+   ],
+   [
+    "pb4",
+    "pb2r"
+   ],
+   [
+    "pb3l",
+    "pm1l"
+   ],
+   [
+    "pb3l",
+    "pm2l"
+   ],
+   [
+    "pb3l",
+    "pm3"
+   ],
+   [
+    "pb3r",
+    "pm1r"
+   ],
+   [
+    "pb3r",
+    "pm2r"
+   ],
+   [
+    "pb3r",
+    "pm3"
+   ],
+   [
+    "pb4",
+    "pm3"
+   ],
+   [
+    "pb4",
+    "pm1l"
+   ],
+   [
+    "pb4",
+    "pm1r"
+   ],
+   [
+    "pb2l",
+    "pm2l"
+   ],
+   [
+    "pb2r",
+    "pm2r"
+   ],
+   [
+    "pb1l",
+    "pm1l"
+   ],
+   [
+    "pb1r",
+    "pm1r"
+   ]
+  ],
+  "triangles": [
+   [
+    "id1:",
+    "id2:",
+    "id3:"
+   ],
+   {
+    "groundModel": "metal"
+   },
+   [
+    "pb1r",
+    "pb1l",
+    "pb2l"
+   ],
+   [
+    "pb1r",
+    "pb2l",
+    "pb2r"
+   ]
+  ]
+ }
+}

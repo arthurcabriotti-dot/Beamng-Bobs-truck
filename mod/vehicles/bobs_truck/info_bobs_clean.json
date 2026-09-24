@@ -1,0 +1,12 @@
+{
+ "Configuration": "Bob's Truck (Summer)",
+ "Value": 8500,
+ "Description": "Plow frame and toolbox removed.",
+ "Drivetrain": "4WD",
+ "Transmission": "Automatic",
+ "Fuel Type": "Gasoline",
+ "Power": 167,
+ "Torque": 372,
+ "Weight": 2084,
+ "Config Type": "Factory"
+}

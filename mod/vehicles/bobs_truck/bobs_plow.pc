@@ -1,0 +1,24 @@
+{
+ "format": 2,
+ "model": "bobs_truck",
+ "parts": {
+  "bt_toolbox": "bt_toolbox_uws",
+  "bt_plowmount": "bt_plowmount_western",
+  "bt_plow": "bt_plow_western"
+ },
+ "vars": {},
+ "paints": [
+  {
+   "baseColor": [
+    0.5,
+    0.035,
+    0.04,
+    1.2
+   ],
+   "metallic": 0.1,
+   "roughness": 0.55,
+   "clearcoat": 0.6,
+   "clearcoatRoughness": 0.2
+  }
+ ]
+}

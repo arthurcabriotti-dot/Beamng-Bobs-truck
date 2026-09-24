@@ -1,0 +1,645 @@
+{
+  "bt_paint": {
+    "name": "bt_paint",
+    "mapTo": "bt_paint",
+    "class": "Material",
+    "persistentId": "74c94bb2-141a-5da6-8b3d-4b28ced74583",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.15,
+        "roughnessFactor": 0.5,
+        "instanceBaseColor": true,
+        "clearCoatFactor": 1.0,
+        "clearCoatRoughnessFactor": 0.12
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "dynamicCubemap": true
+  },
+  "bt_chrome": {
+    "name": "bt_chrome",
+    "mapTo": "bt_chrome",
+    "class": "Material",
+    "persistentId": "258d4da5-f372-5666-b505-db7026d37f50",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.92,
+          0.92,
+          0.94,
+          1
+        ],
+        "metallicFactor": 1.0,
+        "roughnessFactor": 0.07
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "dynamicCubemap": true
+  },
+  "bt_argent": {
+    "name": "bt_argent",
+    "mapTo": "bt_argent",
+    "class": "Material",
+    "persistentId": "b0ccf6ee-2cfb-5962-965e-201ceeaaab3a",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.62,
+          0.63,
+          0.64,
+          1
+        ],
+        "metallicFactor": 0.7,
+        "roughnessFactor": 0.35
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_black": {
+    "name": "bt_black",
+    "mapTo": "bt_black",
+    "class": "Material",
+    "persistentId": "d180a1ac-6328-55c3-8b97-d8525abea9f6",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.018,
+          0.018,
+          0.018,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.55
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_rubber": {
+    "name": "bt_rubber",
+    "mapTo": "bt_rubber",
+    "class": "Material",
+    "persistentId": "10b3965c-4c29-5e37-99e9-299a510d4b26",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.025,
+          0.025,
+          0.025,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.85
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_glass": {
+    "name": "bt_glass",
+    "mapTo": "bt_glass",
+    "class": "Material",
+    "persistentId": "86bdf6e1-26c0-5d14-9c7b-c9dfe9f94681",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.12,
+          0.14,
+          0.15,
+          0.28
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.05,
+        "opacityFactor": 0.28
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "translucent": true,
+    "translucentZWrite": false,
+    "doubleSided": true,
+    "dynamicCubemap": true
+  },
+  "bt_headlight": {
+    "name": "bt_headlight",
+    "mapTo": "bt_headlight",
+    "class": "Material",
+    "persistentId": "4c589ed8-197c-5daa-9655-e94bdf172189",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.85,
+          0.86,
+          0.84,
+          1
+        ],
+        "metallicFactor": 0.6,
+        "roughnessFactor": 0.15
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_lamp_clear": {
+    "name": "bt_lamp_clear",
+    "mapTo": "bt_lamp_clear",
+    "class": "Material",
+    "persistentId": "feb857d7-f971-5c0e-826b-1c14821c9e76",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.8,
+          0.8,
+          0.76,
+          1
+        ],
+        "metallicFactor": 0.3,
+        "roughnessFactor": 0.2
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_taillight": {
+    "name": "bt_taillight",
+    "mapTo": "bt_taillight",
+    "class": "Material",
+    "persistentId": "c4555d5c-d1dc-55ba-a1c9-2d8d5873594b",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.55,
+          0.02,
+          0.02,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.15
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_amber": {
+    "name": "bt_amber",
+    "mapTo": "bt_amber",
+    "class": "Material",
+    "persistentId": "7b1a399e-f610-556e-81f2-0ffb0c399afe",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.95,
+          0.45,
+          0.02,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.2
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_steelwheel": {
+    "name": "bt_steelwheel",
+    "mapTo": "bt_steelwheel",
+    "class": "Material",
+    "persistentId": "55fe36e2-a0a3-5590-bfac-f686fa6f60f3",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.02,
+          0.02,
+          0.022,
+          1
+        ],
+        "metallicFactor": 0.3,
+        "roughnessFactor": 0.3
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_rust": {
+    "name": "bt_rust",
+    "mapTo": "bt_rust",
+    "class": "Material",
+    "persistentId": "b14ea0bd-aad1-5dab-9be6-ce1bc722a406",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.36,
+          0.16,
+          0.07,
+          1
+        ],
+        "metallicFactor": 0.3,
+        "roughnessFactor": 0.9
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_tire": {
+    "name": "bt_tire",
+    "mapTo": "bt_tire",
+    "class": "Material",
+    "persistentId": "01a8f75e-c788-5da5-bd6c-85d5c2933777",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.03,
+          0.03,
+          0.03,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.9
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_tread": {
+    "name": "bt_tread",
+    "mapTo": "bt_tread",
+    "class": "Material",
+    "persistentId": "2a2834e5-2b05-501b-a637-9f27b799b6c4",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.9,
+        "baseColorMap": "vehicles/bobs_truck/bt_tread.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_diamond": {
+    "name": "bt_diamond",
+    "mapTo": "bt_diamond",
+    "class": "Material",
+    "persistentId": "cd4703af-4171-558c-9416-ad43836af890",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.85,
+        "roughnessFactor": 0.35,
+        "baseColorMap": "vehicles/bobs_truck/bt_diamond.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_frame": {
+    "name": "bt_frame",
+    "mapTo": "bt_frame",
+    "class": "Material",
+    "persistentId": "ba224b4b-cf5f-5e9e-986b-fe04530862e9",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.03,
+          0.03,
+          0.03,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.6
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_under": {
+    "name": "bt_under",
+    "mapTo": "bt_under",
+    "class": "Material",
+    "persistentId": "a317f025-08ee-5f12-a4fb-b00fa7eb25b8",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.06,
+          0.055,
+          0.05,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.8
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_engine": {
+    "name": "bt_engine",
+    "mapTo": "bt_engine",
+    "class": "Material",
+    "persistentId": "8adb54c7-5c65-507d-9537-77e87be5e6b3",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.55,
+          0.22,
+          0.05,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.5
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_interior": {
+    "name": "bt_interior",
+    "mapTo": "bt_interior",
+    "class": "Material",
+    "persistentId": "32eb406c-809b-5ba6-b44f-405221230623",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.07,
+          0.065,
+          0.065,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "doubleSided": true
+  },
+  "bt_seat": {
+    "name": "bt_seat",
+    "mapTo": "bt_seat",
+    "class": "Material",
+    "persistentId": "0990755d-8d37-5932-a5c2-321a8ea5a434",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.2,
+          0.05,
+          0.05,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.7
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_plowred": {
+    "name": "bt_plowred",
+    "mapTo": "bt_plowred",
+    "class": "Material",
+    "persistentId": "1fad0f66-35af-570e-aca5-713efebed051",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.62,
+          0.03,
+          0.02,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.3
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_yellow": {
+    "name": "bt_yellow",
+    "mapTo": "bt_yellow",
+    "class": "Material",
+    "persistentId": "3d7f3035-bc89-5306-8328-425a981ba285",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.85,
+          0.62,
+          0.05,
+          1
+        ],
+        "metallicFactor": 0.1,
+        "roughnessFactor": 0.4
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_tailgate_text": {
+    "name": "bt_tailgate_text",
+    "mapTo": "bt_tailgate_text",
+    "class": "Material",
+    "persistentId": "fa6e393d-9423-5139-8c97-ccffeb3f5f3b",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.5,
+        "baseColorMap": "vehicles/bobs_truck/bt_tailgate_text.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5,
+    "alphaTest": true,
+    "alphaRef": 40,
+    "translucent": true
+  },
+  "bt_plate": {
+    "name": "bt_plate",
+    "mapTo": "bt_plate",
+    "class": "Material",
+    "persistentId": "8e1e4a7b-ad86-50c9-8b32-b8649e498112",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.4,
+        "baseColorMap": "vehicles/bobs_truck/bt_plate.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_uws": {
+    "name": "bt_uws",
+    "mapTo": "bt_uws",
+    "class": "Material",
+    "persistentId": "c2b1bfac-7602-5497-9d79-e2effed31e20",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          0.05,
+          0.25,
+          0.75,
+          1
+        ],
+        "metallicFactor": 0.2,
+        "roughnessFactor": 0.4
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  },
+  "bt_gauges": {
+    "name": "bt_gauges",
+    "mapTo": "bt_gauges",
+    "class": "Material",
+    "persistentId": "091f85dd-cae7-53f0-9f0c-70efc4b44ede",
+    "Stages": [
+      {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.4,
+        "baseColorMap": "vehicles/bobs_truck/bt_gauges.png"
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "vehicle",
+    "version": 1.5
+  }
+}

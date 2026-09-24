@@ -1,0 +1,55 @@
+{
+ "Name": "K20 (Bob's Truck)",
+ "Brand": "Chevrolet",
+ "Type": "Truck",
+ "Body Style": "Pickup",
+ "Country": "United States",
+ "Derby Class": "Heavy Truck",
+ "Years": {
+  "min": 1985,
+  "max": 1986
+ },
+ "Region": "North America",
+ "Description": "Bob's 1985 Chevrolet K20 square body: regular cab long bed, 350 V8, TH400, 4x4, 8-lug steelies, chrome step bumper, UWS toolbox and a Western plow setup.",
+ "Author": "Bob's Truck mod",
+ "default_pc": "bobs_daily",
+ "paints": {
+  "Cardinal Red (faded)": {
+   "baseColor": [
+    0.5,
+    0.035,
+    0.04,
+    1.2
+   ],
+   "metallic": 0.1,
+   "roughness": 0.55,
+   "clearcoat": 0.6,
+   "clearcoatRoughness": 0.2
+  },
+  "Frost White": {
+   "baseColor": [
+    0.85,
+    0.85,
+    0.83,
+    1.2
+   ],
+   "metallic": 0.1,
+   "roughness": 0.5,
+   "clearcoat": 0.6,
+   "clearcoatRoughness": 0.2
+  },
+  "Midnight Black": {
+   "baseColor": [
+    0.02,
+    0.02,
+    0.02,
+    1.2
+   ],
+   "metallic": 0.1,
+   "roughness": 0.4,
+   "clearcoat": 0.8,
+   "clearcoatRoughness": 0.1
+  }
+ },
+ "defaultPaintName1": "Cardinal Red (faded)"
+}

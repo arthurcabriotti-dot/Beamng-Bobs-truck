@@ -1,0 +1,12 @@
+{
+ "Configuration": "Bob's Truck (Plow Frame)",
+ "Value": 9500,
+ "Description": "Bob's 1985 K20 as it sits in the driveway: plow frame and lights on, blade off.",
+ "Drivetrain": "4WD",
+ "Transmission": "Automatic",
+ "Fuel Type": "Gasoline",
+ "Power": 167,
+ "Torque": 372,
+ "Weight": 2084,
+ "Config Type": "Factory"
+}
